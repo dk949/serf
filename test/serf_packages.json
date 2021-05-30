@@ -1,0 +1,12 @@
+{
+    "packages":[
+        "94241883410560":{
+            "url": "https://github.com/dk949/serf_testrepo",
+            "branch": "main",
+            "hash": "5afd954"
+            "tag": null
+            "path": "path/to/repo/reponame"
+        }
+    ],
+    "numPackages":1
+}

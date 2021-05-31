@@ -71,21 +71,22 @@
 * Example:
 ```JSON
 {
-    "packages":[
-        "94241883410560":{
-            "url": "https://github.com/dk949/serf_testrepo",
-            "branch": "main",
-            "hash": "5afd954"
-            "tag": null
-            "path": "path/to/repo/reponame"
-        }
-    ],
-    "numPackages":1
+  "packages": [
+    {
+      "url": "https://github.com/dk949/serf_testrepo",
+      "branch": "main",
+      "hash": "5afd954",
+      "tag": null,
+      "path": "path/to/repo/reponame",
+      "name": "94241883410560"
+    }
+  ],
+  "numPackages": 1
 }
 ```
 * Explanation:
     * All packages are stored in the array `packages`
-    * Name of each package object is the hashed url with the current number of packages appended to the end
+    * `name` of each package object is the hashed url with the current number of packages appended to the end.
         * The number of packages (not counting the one being added) is appended to allow multiple versions of the same package (from the same url) to exist.
         * `std::hash<const char*>{}("https://github.com/dk949/serf_testrepo0"`
     * `hash` and `tag` are mutually exclusive.

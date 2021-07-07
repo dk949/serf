@@ -40,23 +40,26 @@
     * See `serf latest [PATH]` for alternative behaviour.
 * This command will not pull any new changes from remote. If desired `[BRANCH/TAG/COMMIT]` doe not exist an error will be thrown.
 
-### `serf checkout latest`
+### `serf update`
 * Will checkout (and record) the latest commit on the current branch.
 * Will perform this operation for all packages.
 
-### `serf checkout latest [PATH]`
+### `serf update [PATH]`
 * Same as `serf checkout latest` but only for specific `[PATH]`.
 
 ### `serf latest [PATH]`
-* Forces serf always fetch latest commit from a branch.
+* Forces serf always fetch the latest commit from a branch.
     * Not recommended for repos you don't own.
 * Commit hash will not be stored, just branch name
-* When setting up the project latest changes from the branch will be pulled.
+* When setting up the project, the latest changes from the branch will be pulled.
     * See `serf setup` and `serf`
 
 ### `serf pull`
 * Pull all remote changes for all packages.
     * Stays on the previously selected commit
+
+### `serf pull [PATH]`
+* Same as `serf pull` but only for specific `[PATH]`
 
 ### `serf setup`
 * Reads the `serf_packages.json` file, clones all necessary repos and switches them to correct commit, tag or branch.

@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.20)
 
 # Set the project name to your project name, my project isn't very descriptive
 project(SerfProject CXX)
+set(LIB_NAME gitpac)
+set(LIB_DIR ${CMAKE_SOURCE_DIR}/lib)
+
+set(EXE_NAME serf)
+set(EXE_DIR ${CMAKE_SOURCE_DIR}/src)
+
+set(ARGPARSE_NAME argparse)
+set(ARGPARSE_DIR ${CMAKE_SOURCE_DIR}/argparse)
 
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
@@ -43,6 +51,7 @@ include(cmake/StaticAnalyzers.cmake)
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
 
+
 # Very basic PCH example
 option(ENABLE_PCH "Enable Precompiled Headers" OFF)
 if (ENABLE_PCH)
@@ -70,17 +79,12 @@ set(CONAN_EXTRA_OPTIONS "")
 include(cmake/Conan.cmake)
 run_conan()
 
+add_subdirectory(argparse)
+add_subdirectory(lib)
+add_subdirectory(src)
+
 if (ENABLE_TESTING)
     enable_testing()
     message("Building Tests. Be sure to check out test/constexpr_tests for constexpr testing")
     add_subdirectory(test)
 endif ()
-
-set(LIB_NAME gitpac)
-set(LIB_DIR ${CMAKE_SOURCE_DIR}/lib)
-
-set(EXE_NAME serf)
-set(EXE_DIR ${CMAKE_SOURCE_DIR}/src)
-
-add_subdirectory(src)
-add_subdirectory(lib)

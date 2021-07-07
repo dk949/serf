@@ -7,67 +7,46 @@ endif()
 
 # export compile commands
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-add_custom_target(linktestcompilecommands ALL
+add_custom_target(test_compile_commands ALL
     COMMAND ${CMAKE_COMMAND} -E create_symlink  ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}/test/compile_commands.json)
 
 
+# setup files to be dested
+set(TEST_EXTRA_LIBS ${ARGPARSE_NAME} CONAN_PKG::spdlog)
+message(STATUS "ARGPARSE_LIB = ${ARGPARSE_NAME}")
+
+include_directories(
+    ${ARGPARSE_DIR}
+    ${LIB_DIR}
+    ${EXE_DIR}
+    ${CONAN_INCLUDE_DIRS_SPDLOG}
+    )
+
 add_library(catch_main STATIC catch_main.cpp)
-target_link_libraries(catch_main PUBLIC CONAN_PKG::catch2)
+target_link_libraries(catch_main PUBLIC CONAN_PKG::catch2 ${TEST_EXTRA_LIBS})
 target_link_libraries(catch_main PRIVATE project_options)
 
-set(TEST_FILES tests.cpp)
 
-add_executable(tests ${TEST_FILES})
-target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
+set(ARGHANDLER_TEST_FILES
+    arghandler_test.cpp
+    ../src/arghandler.cpp
+    ../src/arghandler.hpp
+    )
 
-# automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
-# to whatever you want, or use different for different binaries
+add_executable(arghandler_tests ${ARGHANDLER_TEST_FILES})
+target_link_libraries(arghandler_tests PRIVATE project_warnings project_options catch_main)
+
 catch_discover_tests(
-  tests
+  arghandler_tests
   TEST_PREFIX
-  "unittests."
+  "arghandler."
   REPORTER
   xml
   OUTPUT_DIR
   .
   OUTPUT_PREFIX
-  "unittests."
+  "arghandler."
   OUTPUT_SUFFIX
-  .xml)
+  .xml
+  )
 
-# Add a file containing a set of constexpr tests
-set(CONSTEXPR_TEST_FILES constexpr_tests.cpp)
-add_executable(constexpr_tests ${CONSTEXPR_TEST_FILES})
-target_link_libraries(constexpr_tests PRIVATE project_options project_warnings catch_main)
-
-catch_discover_tests(
-  constexpr_tests
-  TEST_PREFIX
-  "constexpr."
-  REPORTER
-  xml
-  OUTPUT_DIR
-  .
-  OUTPUT_PREFIX
-  "constexpr."
-  OUTPUT_SUFFIX
-  .xml)
-
-# Disable the constexpr portion of the test, and build again this allows us to have an executable that we can debug when
-# things go wrong with the constexpr testing
-add_executable(relaxed_constexpr_tests constexpr_tests.cpp)
-target_link_libraries(relaxed_constexpr_tests PRIVATE project_options project_warnings catch_main)
-target_compile_definitions(relaxed_constexpr_tests PRIVATE -DCATCH_CONFIG_RUNTIME_STATIC_REQUIRE)
-
-catch_discover_tests(
-  relaxed_constexpr_tests
-  TEST_PREFIX
-  "relaxed_constexpr."
-  REPORTER
-  xml
-  OUTPUT_DIR
-  .
-  OUTPUT_PREFIX
-  "relaxed_constexpr."
-  OUTPUT_SUFFIX
-  .xml)

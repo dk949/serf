@@ -12,6 +12,10 @@ set(HEADER_FILES
 
 add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_custom_target(lib_compile_commands ALL
+    COMMAND ${CMAKE_COMMAND} -E create_symlink  ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}/lib/compile_commands.json)
+
 
 target_include_directories(${LIB_NAME} SYSTEM PRIVATE ${CONAN_INCLUDE_DIRS_SPDLOG})
 target_include_directories(${LIB_NAME} SYSTEM PRIVATE ${CONAN_INCLUDE_DIRS_NLOHMANN_JSON})

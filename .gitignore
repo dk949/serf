@@ -2,4 +2,6 @@ build/
 .idea/
 tags
 */tags
+*/compile_commands.json
 
+Session.vim

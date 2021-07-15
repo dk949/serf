@@ -35,6 +35,14 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
 
     SECTION("getArgs") {
         ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
+        std::vector<ap::Argument> v0{{"arg0", false}, {"arg1", false}, {"arg2", false}};
+
+        const auto test0 = al0.getArgs();
+        CHECK_THAT(test0, Catch::Matchers::Equals(v0));
+    }
+
+    SECTION("size") {
+        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
         CHECK(al0.size() == 3);
     }
 

@@ -18,23 +18,24 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
     SECTION("Constructor") {
         // regular constructor
         CHECK_NOTHROW([]() {
-            ap::ArgumentList argumentList {{"arg0", false}, {"arg1", true}, {ap::Argument::noName, false}};
+            ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
         }());
 
+        // constructor shoudl fail because empty init-list
+        CHECK_THROWS([]() { ap::ArgumentList al0 {{}}; }());
+
         // constructor shoudl fail because first arg is optional
-        CHECK_THROWS([]() {
-            ap::ArgumentList argumentList {{"arg0", true}, {"arg1", true}, {ap::Argument::noName, false}};
-        }());
+        CHECK_THROWS([]() { ap::ArgumentList al0 {{"arg0", true}, {"arg1", false}, {"arg2", false}}; }());
 
         // constructor shoudl fail because first arg is noName
         CHECK_THROWS([]() {
-            ap::ArgumentList argumentList {{ap::Argument::noName, false}, {"arg1", true}, {ap::Argument::noName, false}};
+            ap::ArgumentList al0 {{ap::Argument::noName, false}, {"arg1", false}, {"arg2", false}};
         }());
     }
 
     SECTION("getArgs") {
-        ap::ArgumentList argumentList {{"arg0", false}, {"arg1", false}, {"arg2", false}};
-        CHECK(argumentList.size() == 3);
+        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
+        CHECK(al0.size() == 3);
     }
 
 
@@ -58,6 +59,13 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
         CHECK_FALSE(al0 != al1);
         CHECK_FALSE(al0 != al2);
         CHECK(al0 != al3);
+    }
+
+    SECTION("operator[]") {
+        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
+        CHECK_THAT(al0[0].value(), Catch::Matchers::Equals("arg0"));
+        CHECK(al0[2].value() == nullptr);
+        CHECK_FALSE(al0[3]);
     }
 }
 

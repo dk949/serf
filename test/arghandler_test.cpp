@@ -3,7 +3,7 @@
 #include <catch2/catch.hpp>
 
 /// These should not throw
-TEST_CASE("init success", "[arghandler][success]") {
+TEST_CASE("init nothrow", "[arghandler][nothrow]") {
     //### `serf init`
     //### `serf init [DIR_NAME]`
 
@@ -23,7 +23,7 @@ TEST_CASE("init success", "[arghandler][success]") {
 }
 
 
-TEST_CASE("clone success", "[arghandler][success]") {
+TEST_CASE("clone nothrow", "[arghandler][nothrow]") {
     //    ### `serf clone [REPO_URL] [PATH]`
     //    ### `serf clone [REPO_URL]`
     SECTION("serf clone https://github.com/dk949/serf_testrepo.git") {
@@ -51,7 +51,7 @@ TEST_CASE("clone success", "[arghandler][success]") {
     }
 }
 
-TEST_CASE("delete success", "[arghandler][success]") {
+TEST_CASE("delete nothrow", "[arghandler][nothrow]") {
     // ### `serf delete [PATH]`
     SECTION("serf delete dir") {
         auto argv = std::array {"serf", "delete", "dir"};
@@ -61,7 +61,7 @@ TEST_CASE("delete success", "[arghandler][success]") {
 }
 
 
-TEST_CASE("checkout success", "[arghandler][success]") {
+TEST_CASE("checkout nothrow", "[arghandler][nothrow]") {
     // ### `serf checkout [PATH] [BRANCH/TAG/COMMIT]`
     SECTION("serf checkout dir dev") {
         auto argv = std::array {"serf", "checkout", "dir", "dev"};
@@ -70,7 +70,7 @@ TEST_CASE("checkout success", "[arghandler][success]") {
     }
 }
 
-TEST_CASE("update success", "[arghandler][success]") {
+TEST_CASE("update nothrow", "[arghandler][nothrow]") {
     // ### `serf update`
 
     // ### `serf update [PATH]`
@@ -88,7 +88,7 @@ TEST_CASE("update success", "[arghandler][success]") {
     }
 }
 
-TEST_CASE("latest success", "[arghandler][success]") {
+TEST_CASE("latest nothrow", "[arghandler][nothrow]") {
     // ### `serf latest [PATH]`
     SECTION("serf latest dir") {
         auto argv = std::array {"serf", "latest", "dir"};
@@ -98,7 +98,7 @@ TEST_CASE("latest success", "[arghandler][success]") {
 }
 
 
-TEST_CASE("pull success", "[arghandler][success]") {
+TEST_CASE("pull nothrow", "[arghandler][nothrow]") {
     // ### `serf pull`
 
     // ### `serf pull [PATH]`
@@ -116,7 +116,7 @@ TEST_CASE("pull success", "[arghandler][success]") {
     }
 }
 
-TEST_CASE("setup success", "[arghandler][success]") {
+TEST_CASE("setup nothrow", "[arghandler][nothrow]") {
     // ### `serf setup`
     SECTION("serf setup") {
         auto argv = std::array {"serf", "setup"};
@@ -125,7 +125,7 @@ TEST_CASE("setup success", "[arghandler][success]") {
     }
 }
 
-TEST_CASE("no args success", "[arghandler][success]") {
+TEST_CASE("no args nothrow", "[arghandler][nothrow]") {
     // ### `serf`
     SECTION("serf") {
         auto argv = std::array {"serf"};
@@ -135,7 +135,7 @@ TEST_CASE("no args success", "[arghandler][success]") {
 }
 
 /// These should throw
-TEST_CASE("init fail", "[arghandler][fail]") {
+TEST_CASE("init throw", "[arghandler][throw]") {
     SECTION("serf init dir arg") {
         auto argv = std::array {"serf", "init", "dir", "arg"};
         const int argc = argv.size();
@@ -145,7 +145,7 @@ TEST_CASE("init fail", "[arghandler][fail]") {
 }
 
 
-TEST_CASE("clone fail", "[arghandler][fail]") {
+TEST_CASE("clone throw", "[arghandler][throw]") {
     SECTION("serf clone arg arg") {
         auto argv = std::array {"serf", "clone", "arg", "arg"};
         const int argc = argv.size();
@@ -153,7 +153,7 @@ TEST_CASE("clone fail", "[arghandler][fail]") {
     }
 }
 
-TEST_CASE("delete fail", "[arghandler][fail]") {
+TEST_CASE("delete throw", "[arghandler][throw]") {
     SECTION("serf delete dir arg") {
         auto argv = std::array {"serf", "delete", "dir", "arg"};
         const int argc = argv.size();
@@ -161,7 +161,7 @@ TEST_CASE("delete fail", "[arghandler][fail]") {
     }
 }
 
-TEST_CASE("checkout fail", "[arghandler][fail]") {
+TEST_CASE("checkout throw", "[arghandler][throw]") {
     SECTION("serf checkout dir dev arg") {
         auto argv = std::array {"serf", "checkout", "dir", "dev", "arg"};
         const int argc = argv.size();
@@ -169,7 +169,7 @@ TEST_CASE("checkout fail", "[arghandler][fail]") {
     }
 }
 
-TEST_CASE("update fail", "[arghandler][fail]") {
+TEST_CASE("update throw", "[arghandler][throw]") {
     SECTION("serf update dir arg") {
         auto argv = std::array {"serf", "update", "dir", "arg"};
         const int argc = argv.size();
@@ -177,7 +177,7 @@ TEST_CASE("update fail", "[arghandler][fail]") {
     }
 }
 
-TEST_CASE("latest fail", "[arghandler][fail]") {
+TEST_CASE("latest throw", "[arghandler][throw]") {
     SECTION("serf latest dir arg") {
         auto argv = std::array {"serf", "latest", "dir", "arg"};
         const int argc = argv.size();
@@ -185,7 +185,7 @@ TEST_CASE("latest fail", "[arghandler][fail]") {
     }
 }
 
-TEST_CASE("pull fail", "[arghandler][fail]") {
+TEST_CASE("pull throw", "[arghandler][throw]") {
     SECTION("serf pull dir arg") {
         auto argv = std::array {"serf", "pull", "dir", "arg"};
         const int argc = argv.size();
@@ -193,7 +193,7 @@ TEST_CASE("pull fail", "[arghandler][fail]") {
     }
 }
 
-TEST_CASE("setup fail", "[arghandler][fail]") {
+TEST_CASE("setup throw", "[arghandler][throw]") {
     SECTION("serf setup arg") {
         auto argv = std::array {"serf", "setup", "arg"};
         const int argc = argv.size();
@@ -201,7 +201,7 @@ TEST_CASE("setup fail", "[arghandler][fail]") {
     }
 }
 
-TEST_CASE("noargs fail", "[arghandler][fail]") {
+TEST_CASE("noargs throw", "[arghandler][throw]") {
     SECTION("serf") {
         auto argv = std::array {"serf", "arg"};
         const int argc = argv.size();

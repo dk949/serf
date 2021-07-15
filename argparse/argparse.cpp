@@ -1,30 +1,24 @@
 #include "argparse.hpp"
 
-#include <spdlog/spdlog.h>
-
-ap::Argument::Argument(const char *argName, bool optional): m_argName(argName), m_optional(optional) {}
-
-
-
-bool ap::Argument::isOptional() {
-    return m_optional;
-}
-
-const char *ap::Argument::getName() {
-    return m_argName;
-}
-
-
+#include <cstring>
 
 ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args): m_args(args) {
     checkList();
 }
 
 
-constexpr void ap::ArgumentList::checkList() {
-    if (m_args[0].isOptional() || m_args[0].getName() == ap::Argument::noName) {
+void ap::ArgumentList::checkList() {
+    if (m_args[0].optional || m_args[0].argName == ap::Argument::noName) {
         throw "Bad argument list. //TODO make this a real exception";
     }
+}
+
+
+std::optional<const char *> ap::ArgumentList::operator[](size_t index) const {
+    if (m_args.size() < index) {
+        return m_args[index].argName;
+    }
+    return std::nullopt;
 }
 
 
@@ -39,3 +33,28 @@ ap::ArgParse &ap::ArgParse::add(std::initializer_list<Argument> argList) {
 ap::ArgParse &ap::ArgParse::noArgs() {
     return *this;
 }
+
+
+bool ap::ArgParse::present(const char *name) {
+    for (const auto &i : m_argLists) {
+        // checkList() ensures that this is fine to dereference
+        if (std::strcmp(*i[0], name) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+#ifdef DEBUG
+void ap::ArgParse::printDebug() {
+    for (const auto &i : m_argLists) {
+        for (const auto &j : i.getArgs()) {
+            spdlog::info("Name: {}, optional: {}", j.argName ? j.argName : "None", j.optional);
+        }
+    }
+}
+#else
+void ap::ArgParse::printDebug() {}
+#endif

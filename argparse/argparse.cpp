@@ -1,6 +1,7 @@
 #include "argparse.hpp"
 
 #include <cstring>
+#include <numeric>
 
 ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args): m_args(args) {
     checkList();
@@ -9,10 +10,14 @@ ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args): m_args(arg
 
 void ap::ArgumentList::checkList() {
     if (m_args[0].optional || m_args[0].argName == ap::Argument::noName) {
-        throw "Bad argument list. //TODO make this a real exception";
+        throw std::logic_error("Bad argument list.");
     }
 }
 
+
+const std::vector<ap::Argument> &ap::ArgumentList::getArgs() const {
+    return m_args;
+}
 
 std::optional<const char *> ap::ArgumentList::operator[](size_t index) const {
     if (m_args.size() < index) {
@@ -20,6 +25,25 @@ std::optional<const char *> ap::ArgumentList::operator[](size_t index) const {
     }
     return std::nullopt;
 }
+
+bool ap::ArgumentList::operator==(const ArgumentList & other) const {
+    if(m_args.size() != other.m_args.size()){
+        return false;
+    }
+
+    for (size_t i = 0; i < m_args.size(); i++){
+        if(std::strcmp(m_args[i].argName, other.m_args[i].argName) != 0){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+size_t ap::ArgumentList::size() const {
+    return m_args.size();
+}
+
 
 
 
@@ -35,14 +59,13 @@ ap::ArgParse &ap::ArgParse::noArgs() {
 }
 
 
-bool ap::ArgParse::present(const char *name) {
-    for (const auto &i : m_argLists) {
-        // checkList() ensures that this is fine to dereference
-        if (std::strcmp(*i[0], name) == 0) {
+bool ap::ArgParse::validate(std::initializer_list<Argument> argList) {
+    for (const auto &list : m_argLists) {
+        if (list == argList) {
             return true;
         }
     }
-    return false;
+    return true;
 }
 
 

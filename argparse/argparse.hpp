@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 #endif
 
+#include <compare>
 #include <optional>
 #include <vector>
 namespace ap {
@@ -18,10 +19,21 @@ namespace ap {
  * \see `ArgParse::noArgs()` for case with 0 arguments.
  */
 struct Argument {
+    /*! \var argName argparse.hpp
+     * \brief Name of the argument
+     *
+     * This is the name by which it will be identified in the future
+     * \note if this value is `ap::Argument::noName` it is interprreted as "user can pass in any value and this value will be saved".
+     */
     const char *argName;
+
+
+    /*! \var optional argparse.hpp
+     * \brief Argument is not required if this value is true
+     */
     bool optional;
 
-    /*!
+    /*! \var noName argparse.hpp
      * \brief Variable designating that an argument has no name.
      */
     static constexpr const char *noName = nullptr;
@@ -29,18 +41,43 @@ struct Argument {
 
 
 
+/*! \class ap::ArgumentList argparse.hpp
+ * \brief List of arguments comprising a single command.
+ *
+ * Holds a `std::vector` of `Argument`s representing a single command.
+ */
 class ArgumentList {
 private:
     std::vector<Argument> m_args;
 
 public:
+    /*! \fn ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args) argparse.hpp
+     * \brief Constructs the vector of `Argument`s from the `std::initializer_list`.
+     *
+     * Also makes sure the first `Argument` is not optional and is not `ap::Argument::noName`
+     *
+     * \param args list of `ap::Argument`s that make up this argument list.
+     * \throws std::logic_error if `ap::Argument::optional` is `true` for the first argument or if its `ap::Argument::argName` is `ap::Argument::noName`
+     */
     ArgumentList(std::initializer_list<Argument> args);
 
-    const std::vector<Argument> &getArgs() const {
-        return m_args;
-    }
+    const std::vector<Argument> &getArgs() const;
 
+
+    /*! \fn std::optional<const char *> ap::ArgumentList::operator[](size_t index) const; argparse.hpp
+     * \brief  Get the `argName` of the `index`<sup>th</sup> `ap::Argument`;
+     *
+     * If the argument exists, its `ap::Argument::argName` is returned, otherwise `std::nullopt` is returned
+     * \param index index of the `ap::Argument` to get
+     * \return `ap::Argument::argName` if argument exists, otherwise `std::nullopt`
+     */
     std::optional<const char *> operator[](size_t index) const;
+
+    bool operator==(const ArgumentList &) const;
+
+    size_t size() const;
+
+
 
 private:
     void checkList();
@@ -54,13 +91,10 @@ class ArgParse {
 public:
     ArgParse() = default;
 
-    ArgParse &add(std::initializer_list<Argument>);
+    ArgParse &add(std::initializer_list<Argument> argList);
     ArgParse &noArgs();
 
-    bool present(const char *name);
-
-    const ArgumentList &value(const char *name);
-
+    bool validate(std::initializer_list<Argument> argList);
 
 
     void printDebug();

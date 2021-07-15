@@ -4,6 +4,9 @@
 #include <numeric>
 
 ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args): m_args(args) {
+    if(args.size() < 1) {
+        throw std::logic_error("Empty argument list");
+    }
     checkList();
 }
 
@@ -20,7 +23,7 @@ const std::vector<ap::Argument> &ap::ArgumentList::getArgs() const {
 }
 
 std::optional<const char *> ap::ArgumentList::operator[](size_t index) const {
-    if (m_args.size() < index) {
+    if (m_args.size() > index) {
         return m_args[index].argName;
     }
     return std::nullopt;

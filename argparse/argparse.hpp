@@ -61,6 +61,8 @@ public:
      */
     ArgumentList(std::initializer_list<Argument> args);
 
+    ArgumentList() = delete;
+
     const std::vector<Argument> &getArgs() const;
 
 

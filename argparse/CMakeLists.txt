@@ -19,7 +19,6 @@ add_custom_target(argparse_compile_commands ALL
 
 target_include_directories(${ARGPARSE_NAME} SYSTEM PRIVATE
     ${CONAN_INCLUDE_DIRS_SPDLOG}
-    ${CONAN_INCLUDE_DIRS_CTRE}
     )
 
 target_link_libraries(
@@ -27,5 +26,4 @@ target_link_libraries(
     PRIVATE project_options
     project_warnings
     CONAN_PKG::spdlog
-    CONAN_PKG::ctre
     )

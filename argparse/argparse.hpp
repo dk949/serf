@@ -19,6 +19,7 @@ namespace ap {
  * \see `ArgParse::noArgs()` for case with 0 arguments.
  */
 struct Argument {
+    bool operator==(const Argument &) const = default;
     /*! \var argName argparse.hpp
      * \brief Name of the argument
      *

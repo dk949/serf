@@ -89,8 +89,7 @@ bool ap::ArgParse::validate(std::initializer_list<Argument> argList) {
 
 ap::ParseResult ap::ArgParse::parse(const size_t argc, const char **argv) {
     std::span args {argv[1], argc - 1};
-
-
+    return {{}, std::nullopt}; // FIXME
 }
 
 

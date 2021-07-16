@@ -20,6 +20,7 @@ include_directories(
     ${LIB_DIR}
     ${EXE_DIR}
     ${CONAN_INCLUDE_DIRS_SPDLOG}
+    ${PROJECT_SOURCE_DIR}/zip_iterator
     )
 
 add_library(catch_main STATIC catch_main.cpp)

@@ -9,6 +9,8 @@
 #include <optional>
 #include <span>
 #include <vector>
+#include "zip.hpp"
+
 namespace ap {
 
 /*! \struct Argument argparse.hpp
@@ -81,8 +83,9 @@ public:
 
     bool operator==(const ArgumentList &other) const;
 
-    template<typename T, int N>
-    bool operator==(const std::span<T, N> &) const {
+    template<typename T, size_t N>
+    bool operator==(const std::span<T, N> & other) const {
+        auto z = util::Zip(std::begin(m_args), std::begin(other));
         return false;  // TODO
     }
 

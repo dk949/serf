@@ -21,6 +21,10 @@ target_include_directories(${ARGPARSE_NAME} SYSTEM PRIVATE
     ${CONAN_INCLUDE_DIRS_SPDLOG}
     )
 
+target_include_directories(${ARGPARSE_NAME} PUBLIC
+    ${PROJECT_SOURCE_DIR}/zip_iterator
+    )
+
 target_link_libraries(
     ${ARGPARSE_NAME}
     PRIVATE project_options

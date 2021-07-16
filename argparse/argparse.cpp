@@ -1,9 +1,9 @@
 #include "argparse.hpp"
 
 #include <cstring>
-#include <stdexcept>
 #include <numeric>
 #include <span>
+#include <stdexcept>
 
 ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args): m_args(args) {
     if (args.size() < 1) {
@@ -22,6 +22,12 @@ void ap::ArgumentList::checkList() {
 
 const std::vector<ap::Argument> &ap::ArgumentList::getArgs() const {
     return m_args;
+}
+
+std::vector<const char *> ap::ArgumentList::getStrArgs() const {
+    std::vector<const char *> out(m_args.size());
+    std::generate(std::begin(out), std::end(out), [n = 0u, this]() mutable { return m_args[n++].argName; });
+    return out;
 }
 
 std::optional<const char *> ap::ArgumentList::operator[](size_t index) const {
@@ -111,11 +117,13 @@ bool ap::ArgParse::validate(std::initializer_list<Argument> argList) {
 }
 
 
-
-ap::ParseResult ap::ArgParse::parse(const size_t argc, const char **argv) {
-    std::span args {argv[1], argc - 1};
-
-    return {{}, std::nullopt};  // FIXME
+ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
+    for (const auto &command : m_argLists) {
+        if (auto res = command.isSame(args)) {
+            return {command.getStrArgs(), res};
+        }
+    }
+    throw std::logic_error("Could not parse");
 }
 
 

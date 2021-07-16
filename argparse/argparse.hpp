@@ -71,6 +71,8 @@ public:
 
     const std::vector<Argument> &getArgs() const;
 
+    std::vector<const char *> getStrArgs() const;
+
 
     /*! \fn std::optional<const char *> ap::ArgumentList::operator[](size_t index) const argparse.hpp
      * \brief  Get the `argName` of the `index`<sup>th</sup> `ap::Argument`;
@@ -131,7 +133,7 @@ public:
 
     bool validate(std::initializer_list<Argument> argList);
 
-    ParseResult parse(const size_t argc, const char **argv);
+    ParseResult parse(std::span<const char *> args);
     void printDebug();
 };
 

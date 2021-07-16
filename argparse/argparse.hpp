@@ -7,6 +7,7 @@
 
 #include <compare>
 #include <optional>
+#include <span>
 #include <vector>
 namespace ap {
 
@@ -58,7 +59,9 @@ public:
      * Also makes sure the first `Argument` is not optional and is not `ap::Argument::noName`
      *
      * \param args list of `ap::Argument`s that make up this argument list.
-     * \throws std::logic_error if `ap::Argument::optional` is `true` for the first argument or if its `ap::Argument::argName` is `ap::Argument::noName`
+     * \throws std::logic_error if `ap::Argument::optional` is `true` for the first argument or if its
+     * `ap::Argument::argName` is `ap::Argument::noName`
+     * \throws std::logic_error if \p args is empty
      */
     ArgumentList(std::initializer_list<Argument> args);
 
@@ -67,7 +70,7 @@ public:
     const std::vector<Argument> &getArgs() const;
 
 
-    /*! \fn std::optional<const char *> ap::ArgumentList::operator[](size_t index) const; argparse.hpp
+    /*! \fn std::optional<const char *> ap::ArgumentList::operator[](size_t index) const argparse.hpp
      * \brief  Get the `argName` of the `index`<sup>th</sup> `ap::Argument`;
      *
      * If the argument exists, its `ap::Argument::argName` is returned, otherwise `std::nullopt` is returned
@@ -76,8 +79,19 @@ public:
      */
     std::optional<const char *> operator[](size_t index) const;
 
-    bool operator==(const ArgumentList &) const;
+    bool operator==(const ArgumentList &other) const;
 
+    template<typename T, int N>
+    bool operator==(const std::span<T, N> &) const {
+        return false;  // TODO
+    }
+
+
+    /*! \fn size_t ap::ArgumentList::size() const argparse.hpp
+     * \brief get the number of arguments in the list
+     *
+     * \return number of arguemnts
+     */
     size_t size() const;
 
 
@@ -86,6 +100,21 @@ private:
     void checkList();
 };
 
+
+class ParseResult {
+private:
+    std::vector<const char *> m_args;
+    std::optional<std::vector<const char *>> m_data;
+
+public:
+    ParseResult(std::vector<const char *> args, std::optional<std::vector<const char *>> data);
+
+    bool is(const char *argName) const;
+
+    bool has(const char *argName) const;
+
+    const std::optional<std::vector<const char *>> &data() const;
+};
 
 
 class ArgParse {
@@ -99,7 +128,7 @@ public:
 
     bool validate(std::initializer_list<Argument> argList);
 
-
+    ParseResult parse(const size_t argc, const char **argv);
     void printDebug();
 };
 

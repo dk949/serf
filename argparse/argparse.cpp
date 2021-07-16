@@ -1,6 +1,7 @@
 #include "argparse.hpp"
 
 #include <cstring>
+#include <stdexcept>
 #include <numeric>
 #include <span>
 
@@ -44,8 +45,32 @@ bool ap::ArgumentList::operator==(const ArgumentList &other) const {
     return true;
 }
 
+
+
 size_t ap::ArgumentList::size() const {
     return m_args.size();
+}
+
+
+std::optional<std::vector<const char *>> ap::ArgumentList::isSame(std::span<const char *> query) const {
+    if (m_args.size() != query.size()) {
+        return std::nullopt;
+    }
+
+    for (size_t i = 0; i < m_args.size(); i++) {
+        if (m_args[i].argName != ap::Argument::noName && std::strcmp(m_args[i].argName, query[i]) != 0) {
+            return std::nullopt;
+        }
+    }
+
+    std::vector<const char *> out;
+    std::copy_if(std::begin(query), std::end(query), std::back_inserter(out), [n = 0u, this](const char *) mutable {
+        if (m_args[n++].argName == ap::Argument::noName) {
+            return true;
+        }
+        return false;
+    });
+    return out;
 }
 
 
@@ -89,7 +114,8 @@ bool ap::ArgParse::validate(std::initializer_list<Argument> argList) {
 
 ap::ParseResult ap::ArgParse::parse(const size_t argc, const char **argv) {
     std::span args {argv[1], argc - 1};
-    return {{}, std::nullopt}; // FIXME
+
+    return {{}, std::nullopt};  // FIXME
 }
 
 

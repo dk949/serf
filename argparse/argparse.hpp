@@ -2,6 +2,7 @@
 #define ARGPARSE_HPP
 
 #ifdef DEBUG
+#include <csignal>
 #include <spdlog/spdlog.h>
 #endif
 
@@ -9,7 +10,6 @@
 #include <optional>
 #include <span>
 #include <vector>
-#include "zip.hpp"
 
 namespace ap {
 
@@ -81,13 +81,13 @@ public:
      */
     std::optional<const char *> operator[](size_t index) const;
 
+
+    /*!
+     * \brief Compares two `ap::ArgumentList`s ignoreing `ap::Argument::optional` component.
+     */
     bool operator==(const ArgumentList &other) const;
 
-    template<typename T, size_t N>
-    bool operator==(const std::span<T, N> & other) const {
-        auto z = util::Zip(std::begin(m_args), std::begin(other));
-        return false;  // TODO
-    }
+    std::optional<std::vector<const char *>> isSame(const std::span<const char *> args) const;
 
 
     /*! \fn size_t ap::ArgumentList::size() const argparse.hpp

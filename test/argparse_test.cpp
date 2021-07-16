@@ -17,18 +17,18 @@ TEST_CASE("Argument", "[argparse][Argument]") {
 
 TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
     SECTION("Constructor") {
-        // regular constructor
+        INFO("regular constructor");
         CHECK_NOTHROW([]() {
             ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
         }());
 
-        // constructor shoudl fail because empty init-list
+        INFO("constructor shoudl fail because empty init-list");
         CHECK_THROWS([]() { ap::ArgumentList al0 {{}}; }());
 
-        // constructor shoudl fail because first arg is optional
+        INFO("constructor shoudl fail because first arg is optional");
         CHECK_THROWS([]() { ap::ArgumentList al0 {{"arg0", true}, {"arg1", false}, {"arg2", false}}; }());
 
-        // constructor shoudl fail because first arg is noName
+        INFO("constructor shoudl fail because first arg is noName");
         CHECK_THROWS([]() {
             ap::ArgumentList al0 {{ap::Argument::noName, false}, {"arg1", false}, {"arg2", false}};
         }());
@@ -87,7 +87,7 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
         std::span<const char *> s1 {&args1.data()[1], args1.size() - 1};
 
         // multiple data
-        std::array args2 {"serf","arg0", "hello", "arg2", "world"};
+        std::array args2 {"serf", "arg0", "hello", "arg2", "world"};
         std::span<const char *> s2 {&args2.data()[1], args2.size() - 1};
 
 
@@ -106,33 +106,78 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
         // Multipla data
         ap::ArgumentList al2 {{"arg0", false}, {ap::Argument::noName, false}, {"arg2", true}, {ap::Argument::noName, false}};
 
+        {
+            INFO("no data");
+            auto ov0 = al0.isSame(s0);
+            CHECK(ov0);
+            CHECK(ov0.value().size() == 0);
+        }
 
-        // No data
-        auto ov0 = al0.isSame(s0);
-        CHECK(ov0);
-        CHECK(ov0.value().size() == 0);
-        //CHECK_THAT(ov0.value()[0], Catch::Matchers::Equals(""));
+        {
+            INFO("single data");
+            auto ov1_0 = al1_0.isSame(s1);
+            CHECK(ov1_0);
+            CHECK(ov1_0.value().size() == 1);
+            CHECK_THAT(ov1_0.value()[0], Catch::Matchers::Equals("hello"));
 
-        // single data
-        auto ov1_0 = al1_0.isSame(s1);
-        CHECK(ov1_0);
-        CHECK(ov1_0.value().size() == 1);
-        CHECK_THAT(ov1_0.value()[0], Catch::Matchers::Equals("hello"));
+            auto ov1_1 = al1_1.isSame(s1);
+            CHECK(ov1_1);
+            CHECK(ov1_1.value().size() == 1);
+            CHECK_THAT(ov1_1.value()[0], Catch::Matchers::Equals("hello"));
+        }
 
-        auto ov1_1 = al1_1.isSame(s1);
-        CHECK(ov1_1);
-        CHECK(ov1_1.value().size() == 1);
-        CHECK_THAT(ov1_1.value()[0], Catch::Matchers::Equals("hello"));
+        {
+            INFO("not same");
+            auto ov1_2 = al1_2.isSame(s1);
+            CHECK_FALSE(ov1_2);
+        }
 
-        auto ov1_2 = al1_2.isSame(s1);
-        CHECK_FALSE(ov1_2);
+        {
+            INFO("Multiple data");
+            auto ov2 = al2.isSame(s2);
+            CHECK(ov2);
+            CHECK(ov2.value().size() == 2);
+            CHECK_THAT(ov2.value()[0], Catch::Matchers::Equals("hello"));
+            CHECK_THAT(ov2.value()[1], Catch::Matchers::Equals("world"));
+        }
+    }
+}
 
-        // Multiple data
-        auto ov2 = al2.isSame(s2);
-        CHECK(ov2);
-        CHECK(ov2.value().size() == 2);
-        CHECK_THAT(ov2.value()[0], Catch::Matchers::Equals("hello"));
-        CHECK_THAT(ov2.value()[1], Catch::Matchers::Equals("world"));
+
+TEST_CASE("ParseResult", "[argparse][ParseResult]") {
+    SECTION("Constructor") {
+        INFO("regular constructor");
+        CHECK_NOTHROW([]() { ap::ParseResult pr0 {{"arg0", "arg1"}, std::vector<const char *> {"hello"}}; }());
+    }
+
+    SECTION("is") {
+        ap::ParseResult pr0 {{"arg0", "arg1"}, std::vector<const char *> {"hello"}};
+        CHECK(pr0.is("arg0"));
+        {
+            INFO("is should only check 1st arg");
+            CHECK_FALSE(pr0.is("arg1"));
+        }
+        CHECK_FALSE(pr0.is("arg2"));
+    }
+    SECTION("has") {
+        ap::ParseResult pr0 {{"arg0", "arg1", "arg2"}, std::vector<const char *> {"hello"}};
+        CHECK(pr0.has("arg1"));
+        CHECK(pr0.has("arg2"));
+        {
+            INFO("is should not check 1st arg");
+            CHECK_FALSE(pr0.has("arg0"));
+        }
+        CHECK_FALSE(pr0.has("arg3"));
+    }
+
+    SECTION("data") {
+        ap::ParseResult pr0 {{"arg0", "arg1"}, std::vector<const char *> {"hello"}};
+        ap::ParseResult pr1 {{"arg0", "arg1"}, std::vector<const char *> {}};
+        ap::ParseResult pr2 {{"arg0", "arg1"}, std::nullopt};
+
+        CHECK_THAT(pr0.data().value()[0], Catch::Matchers::Equals("hello"));
+        CHECK(pr1.data().value().size() == 0);
+        CHECK_FALSE(pr2.data());
     }
 }
 

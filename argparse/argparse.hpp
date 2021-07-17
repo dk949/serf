@@ -131,7 +131,7 @@ public:
     ArgParse &add(std::initializer_list<Argument> argList);
     ArgParse &noArgs();
 
-    bool validate(std::initializer_list<Argument> argList);
+    const std::vector<ArgumentList> &getArgLists() const;
 
     ParseResult parse(std::span<const char *> args);
     void printDebug();

@@ -112,10 +112,9 @@ ap::ArgParse &ap::ArgParse::noArgs() {
 }
 
 
-bool ap::ArgParse::validate(std::initializer_list<Argument> argList) {
-    return std::find(std::begin(m_argLists), std::end(m_argLists), argList) != std::end(m_argLists);
+const std::vector<ap::ArgumentList> &ap::ArgParse::getArgLists() const {
+    return m_argLists;
 }
-
 
 ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
     for (const auto &command : m_argLists) {

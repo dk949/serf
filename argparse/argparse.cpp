@@ -6,22 +6,17 @@
 #include <stdexcept>
 
 ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args): m_args(args) {
-    if (args.size() < 1) {
-        throw std::logic_error("Empty argument list");
-    }
     checkList();
 }
 
 
 void ap::ArgumentList::checkList() {
-    if (m_args[0].optional || m_args[0].argName == ap::Argument::noName) {
+    if (m_args[0].argName == ap::Argument::noName) {
         throw std::logic_error("1st argument cannot be optinal not noName");
     }
-    std::for_each(std::begin(m_args), std::end(m_args) - 1, [](const Argument &arg) {
-        if (arg.argName == ap::Argument::noName && arg.optional) {
-            throw std::logic_error("No argument except last can be both optional and noName");
-        }
-    });
+    if (m_args.size() < 1) {
+        throw std::logic_error("Empty argument list");
+    }
 }
 
 
@@ -64,17 +59,12 @@ size_t ap::ArgumentList::size() const {
 
 
 std::optional<std::vector<const char *>> ap::ArgumentList::isSame(std::span<const char *> query) const {
-    if (m_args.size() != query.size() && m_args.back() != Argument {ap::Argument::noName, true}) {
+    if (m_args.size() != query.size()) {
         return std::nullopt;
     }
 
-    size_t totalIters = m_args.back() == Argument {ap::Argument::noName, true} ? m_args.size() - 1 : m_args.size();
-    for (size_t i = 0, skip = 0; i < totalIters; i++) {
-        if (m_args[i].argName != ap::Argument::noName && std::strcmp(m_args[i].argName, query[i - skip]) != 0) {
-            if (m_args[i].optional) {
-                skip++;
-                continue;
-            }
+    for (size_t i = 0; i < m_args.size(); i++) {
+        if (m_args[i].argName != ap::Argument::noName && std::strcmp(m_args[i].argName, query[i]) != 0) {
             return std::nullopt;
         }
     }
@@ -145,7 +135,7 @@ ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
 void ap::ArgParse::printDebug() {
     for (const auto &i : m_argLists) {
         for (const auto &j : i.getArgs()) {
-            spdlog::info("Name: {}, optional: {}", j.argName ? j.argName : "None", j.optional);
+            spdlog::info("Name: {}", j.argName ? j.argName : "noName");
         }
     }
 }

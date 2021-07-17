@@ -2,21 +2,37 @@
 
 #include <catch2/catch.hpp>
 #include <iostream>
+/*
+    TODO: test reorganisation:
+        group classes with tags, not test cases.
+        group methods in test cases not sections.
+        group similar assertions in sections, not scopes.
+        don't use scopes
+    */
 
 TEST_CASE("Argument", "[argparse][Argument]") {
     SECTION("Constructor") {
-        ap::Argument a0 {"arg0", false};
-        CHECK_THAT(a0.argName, Catch::Matchers::Equals("arg0", Catch::CaseSensitive::Yes));
-        CHECK(a0.optional == false);
+        ap::Argument a0 {"arg0"};
+        CHECK_THAT(a0.argName, Catch::Matchers::Equals("arg0"));
     }
     SECTION("operator==") {
-        ap::Argument a0 {"arg0", false};
-        ap::Argument a1 {"arg0", false};
-        ap::Argument a2 {"arg1", false};
+        ap::Argument a0 {"arg0"};
+        ap::Argument a1 {"arg0"};
+        ap::Argument a2 {"arg1"};
         CHECK(a0 == a0);
         CHECK(a0 == a1);
         CHECK(a1 == a0);
         CHECK_FALSE(a0 == a2);
+    }
+
+    SECTION("operator!=") {
+        ap::Argument a0 {"arg0"};
+        ap::Argument a1 {"arg0"};
+        ap::Argument a2 {"arg1"};
+        CHECK_FALSE(a0 != a0);
+        CHECK_FALSE(a0 != a1);
+        CHECK_FALSE(a1 != a0);
+        CHECK(a0 != a2);
     }
 
     SECTION("noName") {
@@ -26,9 +42,7 @@ TEST_CASE("Argument", "[argparse][Argument]") {
 
 TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
     SECTION("Constructor") {
-        CHECK_NOTHROW([]() {
-            ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
-        }());
+        CHECK_NOTHROW([]() { ap::ArgumentList al0 {"arg0", "arg1", ap::Argument::noName}; }());
 
         {
             INFO("constructor shoudl fail because empty init-list");
@@ -36,36 +50,21 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
         }
 
         {
-            INFO("constructor shoudl fail because first arg is optional");
-            CHECK_THROWS([]() { ap::ArgumentList al0 {{"arg0", true}, {"arg1", false}, {"arg2", false}}; }());
-        }
-
-        {
             INFO("constructor shoudl fail because first arg is noName");
-            CHECK_THROWS([]() {
-                ap::ArgumentList al0 {{ap::Argument::noName, false}, {"arg1", false}, {"arg2", false}};
-            }());
+            CHECK_THROWS([]() { ap::ArgumentList al0 {ap::Argument::noName, "arg1", "arg2"}; }());
         }
     }
 
     SECTION("getArgs") {
-        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
-        std::vector<ap::Argument> v0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
+        ap::ArgumentList al0 {"arg0", "arg1", "arg2"};
+        std::vector<ap::Argument> v0 {"arg0", "arg1", "arg2"};
 
         const auto test0 = al0.getArgs();
         CHECK_THAT(test0, Catch::Matchers::Equals(v0));
     }
 
-    SECTION("getStrArgs") {
-        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
-        std::vector v0 {"arg0", "arg1", "arg2"};
-
-        const auto test0 = al0.getStrArgs();
-        CHECK_THAT(test0, Catch::Matchers::Equals(v0));
-    }
-
     SECTION("operator[]") {
-        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
+        ap::ArgumentList al0 {"arg0", "arg1", ap::Argument::noName};
         CHECK_THAT(al0[0].value(), Catch::Matchers::Equals("arg0"));
         CHECK(al0[2].value() == nullptr);
         CHECK_FALSE(al0[3]);
@@ -74,10 +73,10 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
 
 
     SECTION("operator==") {
-        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
-        ap::ArgumentList al1 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
-        ap::ArgumentList al2 {{"arg0", false}, {"arg1", true}, {"arg2", true}};
-        ap::ArgumentList al3 {{"arg1", false}, {"arg1", true}, {"arg2", true}};
+        ap::ArgumentList al0 {"arg0", "arg1", "arg2"};
+        ap::ArgumentList al1 {"arg0", "arg1", "arg2"};
+        ap::ArgumentList al2 {"arg0", "arg1", "arg2"};
+        ap::ArgumentList al3 {"arg1", "arg1", "arg2"};
 
         CHECK(al0 == al0);
         CHECK(al0 == al1);
@@ -87,10 +86,10 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
     }
 
     SECTION("operator!=") {
-        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
-        ap::ArgumentList al1 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
-        ap::ArgumentList al2 {{"arg0", false}, {"arg1", true}, {"arg2", true}};
-        ap::ArgumentList al3 {{"arg1", false}, {"arg1", true}, {"arg2", true}};
+        ap::ArgumentList al0 {"arg0", "arg1", "arg2"};
+        ap::ArgumentList al1 {"arg0", "arg1", "arg2"};
+        ap::ArgumentList al2 {"arg0", "arg1", "arg2"};
+        ap::ArgumentList al3 {"arg1", "arg1", "arg2"};
 
         CHECK_FALSE(al0 != al0);
         CHECK_FALSE(al0 != al1);
@@ -100,73 +99,70 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
 
 
     SECTION("isSame") {
-        //TODO: test optional args
-        // no data
+        // should be matched by al0_0, but not al0_1, al1_0 or al1_2
         std::array args0 {"serf", "arg0", "arg1", "arg2"};
         std::span<const char *> s0 {&args0.data()[1], args0.size() - 1};
 
-        // single data
+        // should be matched by al1_0, but not al1_1
         std::array args1 {"serf", "arg0", "arg1", "hello"};
         std::span<const char *> s1 {&args1.data()[1], args1.size() - 1};
 
-        // multiple data
+        // should be matched by al2_0
         std::array args2 {"serf", "arg0", "hello", "arg2", "world"};
         std::span<const char *> s2 {&args2.data()[1], args2.size() - 1};
 
+        // should not be matched by anything, esspecially al2_0
+        std::array args3 {"serf", "arg0", "arg0", "arg2", "world"};
+        std::span<const char *> s3 {&args3.data()[1], args3.size() - 1};
 
-        // seccess no data
-        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
 
-        // seccess single data
-        ap::ArgumentList al1_0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
+        ap::ArgumentList al0_0 {"arg0", "arg1", "arg2"};
+        ap::ArgumentList al0_1 {"arg0", "arg2", "arg2"};
 
-        // seccess single data optional param
-        ap::ArgumentList al1_1 {{"arg0", false}, {"arg1", true}, {ap::Argument::noName, false}};
+        ap::ArgumentList al1_0 {"arg0", "arg1", ap::Argument::noName};
+        ap::ArgumentList al1_1 {"arg0", "arg2", ap::Argument::noName};
+        ap::ArgumentList al1_2 {"arg0", ap::Argument::noName, "arg2"};
 
-        // fail single data
-        ap::ArgumentList al1_2 {{"arg0", false}, {"arg0", true}, {ap::Argument::noName, false}};
-
-        // Multipla data
-        ap::ArgumentList al2 {{"arg0", false}, {ap::Argument::noName, false}, {"arg2", true}, {ap::Argument::noName, false}};
+        ap::ArgumentList al2_0 {"arg0", ap::Argument::noName, "arg2", ap::Argument::noName};
 
         {
             INFO("no data");
-            auto ov0 = al0.isSame(s0);
+            auto ov0 = al0_0.isSame(s0);
             CHECK(ov0);
             CHECK(ov0.value().size() == 0);
+
+            auto ov1 = al0_1.isSame(s0);
+            CHECK_FALSE(ov1);
+
+            auto ov2 = al1_0.isSame(s0);
+            CHECK_FALSE(ov2);
+
+            auto ov3 = al1_2.isSame(s0);
+            CHECK_FALSE(ov3);
         }
 
         {
             INFO("single data");
-            auto ov1_0 = al1_0.isSame(s1);
-            CHECK(ov1_0);
-            CHECK(ov1_0.value().size() == 1);
-            CHECK_THAT(ov1_0.value()[0], Catch::Matchers::Equals("hello"));
+            auto ov1 = al1_0.isSame(s1);
+            CHECK(ov1);
+            CHECK(ov1.value().size() == 1);
+            CHECK_THAT(ov1.value(), Catch::Matchers::Equals(std::vector {"hello"}));
 
-            auto ov1_1 = al1_1.isSame(s1);
-            CHECK(ov1_1);
-            CHECK(ov1_1.value().size() == 1);
-            CHECK_THAT(ov1_1.value()[0], Catch::Matchers::Equals("hello"));
-        }
-
-        {
-            INFO("not same");
-            auto ov1_2 = al1_2.isSame(s1);
-            CHECK_FALSE(ov1_2);
+            auto ov2 = al1_1.isSame(s1);
+            CHECK_FALSE(ov2);
         }
 
         {
             INFO("Multiple data");
-            auto ov2 = al2.isSame(s2);
+            auto ov2 = al2_0.isSame(s2);
             CHECK(ov2);
             CHECK(ov2.value().size() == 2);
-            CHECK_THAT(ov2.value()[0], Catch::Matchers::Equals("hello"));
-            CHECK_THAT(ov2.value()[1], Catch::Matchers::Equals("world"));
+            CHECK_THAT(ov2.value(), Catch::Matchers::Equals(std::vector {"hello", "world"}));
         }
     }
 
     SECTION("size") {
-        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
+        ap::ArgumentList al0 {"arg0", "arg1", "arg2"};
         CHECK(al0.size() == 3);
     }
 }
@@ -217,12 +213,10 @@ TEST_CASE("ArgParse", "[argparse][ArgParse][check]") {
 
     SECTION("add/getArgLists") {
         auto ap0 = ap::ArgParse()
-                       .add({{"arg0", false}, {"arg1", true}, {ap::Argument::noName, false}})
-                       .add({{"arg0", false}, {"arg2", true}, {ap::Argument::noName, false}});
-        std::vector<ap::ArgumentList> test0 {
-            {{"arg0", false}, {"arg1", true}, {ap::Argument::noName, false}},
-            {{"arg0", false}, {"arg2", true}, {ap::Argument::noName, false}}
-        };
+                       .add({"arg0", "arg1", ap::Argument::noName})
+                       .add({"arg0", "arg2", ap::Argument::noName});
+        std::vector<ap::ArgumentList> test0 {{"arg0", "arg1", ap::Argument::noName},
+            {"arg0", "arg2", ap::Argument::noName}};
         CHECK_THAT(ap0.getArgLists(), Catch::Matchers::Equals(test0));
     }
 
@@ -230,11 +224,10 @@ TEST_CASE("ArgParse", "[argparse][ArgParse][check]") {
         // TODO: test parsing (including optional args)
 
         auto ap0 = ap::ArgParse()
-                       .add({{"arg0", false}, {"arg1", true}, {"arg2", false}})
-                       .add({{"arg0", false}, {"arg2", true}, {ap::Argument::noName, false}});
+                       .add({"arg0", "arg1", "arg2"})
+                       .add({"arg0", "arg2", ap::Argument::noName});
         auto ap1 = ap::ArgParse()
-                       .add({{"arg0", false}, {"arg1", true}, {"arg2", false}})
-                       .add({{"arg0", false},  {ap::Argument::noName, false}, {"arg2", true}, {ap::Argument::noName, true}});
-
+                       .add({"arg0", "arg1", "arg2"})
+                       .add({"arg0", ap::Argument::noName, "arg2", ap::Argument::noName});
     }
 }

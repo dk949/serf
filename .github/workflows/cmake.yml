@@ -20,18 +20,27 @@ jobs:
         version: 11
         platform: x64
 
-    - name: Cahce conan
+    - name: Cache conan
       id: cache-conan
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-          #TODO: this will not grap a new version when it comes out
+          #TODO: this will not grab a new version when it comes out
         key: ${{ runner.os }}-pip-conan-1.38
         restore-keys: |
           ${{ runner.os }}-pip-
 
+    - name: Cache dependencies
+      id: cache-deps
+      uses: actions/cache@v2
+      with:
+        path: ~/.conan
+        key: ${{ runner.os }}-conan-${{ hashFiles('CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-conan-
+
+
     - name: Configure conan
-      if: steps.cache-conan.outputs.cache-hit != 'true'
       run: pip3 install conan; conan -v
 
 

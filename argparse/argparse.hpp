@@ -124,6 +124,7 @@ public:
 
 class ArgParse {
     std::vector<ArgumentList> m_argLists;
+    bool m_canBeNull = false;
 
 public:
     ArgParse() = default;

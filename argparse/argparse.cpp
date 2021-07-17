@@ -108,6 +108,7 @@ ap::ArgParse &ap::ArgParse::add(std::initializer_list<Argument> argList) {
 
 
 ap::ArgParse &ap::ArgParse::noArgs() {
+    m_canBeNull = true;
     return *this;
 }
 
@@ -117,6 +118,10 @@ const std::vector<ap::ArgumentList> &ap::ArgParse::getArgLists() const {
 }
 
 ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
+    if(args.size() == 0 && m_canBeNull){
+        return {{}, std::nullopt};
+    }
+
     for (const auto &command : m_argLists) {
         if (auto res = command.isSame(args)) {
             return {command.getStrArgs(), res};

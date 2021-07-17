@@ -22,6 +22,7 @@ namespace ap {
  * \see `ArgParse::noArgs()` for case with 0 arguments.
  */
 struct Argument {
+    // TODO: pretty sure this is wrong
     bool operator==(const Argument &) const = default;
     /*! \var argName argparse.hpp
      * \brief Name of the argument
@@ -30,12 +31,6 @@ struct Argument {
      * \note if this value is `ap::Argument::noName` it is interprreted as "user can pass in any value and this value will be saved".
      */
     const char *argName;
-
-
-    /*! \var optional argparse.hpp
-     * \brief Argument is not required if this value is true
-     */
-    bool optional;
 
     /*! \var noName argparse.hpp
      * \brief Variable designating that an argument has no name.

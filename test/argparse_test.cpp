@@ -5,9 +5,18 @@
 
 TEST_CASE("Argument", "[argparse][Argument]") {
     SECTION("Constructor") {
-        ap::Argument argument {"testName", false};
-        CHECK_THAT(argument.argName, Catch::Matchers::Equals("testName", Catch::CaseSensitive::Yes));
-        CHECK(argument.optional == false);
+        ap::Argument a0 {"arg0", false};
+        CHECK_THAT(a0.argName, Catch::Matchers::Equals("arg0", Catch::CaseSensitive::Yes));
+        CHECK(a0.optional == false);
+    }
+    SECTION("operator==") {
+        ap::Argument a0 {"arg0", false};
+        ap::Argument a1 {"arg0", false};
+        ap::Argument a2 {"arg1", false};
+        CHECK(a0 == a0);
+        CHECK(a0 == a1);
+        CHECK(a1 == a0);
+        CHECK_FALSE(a0 == a2);
     }
 
     SECTION("noName") {
@@ -17,21 +26,26 @@ TEST_CASE("Argument", "[argparse][Argument]") {
 
 TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
     SECTION("Constructor") {
-        INFO("regular constructor");
         CHECK_NOTHROW([]() {
             ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
         }());
 
-        INFO("constructor shoudl fail because empty init-list");
-        CHECK_THROWS([]() { ap::ArgumentList al0 {{}}; }());
+        {
+            INFO("constructor shoudl fail because empty init-list");
+            CHECK_THROWS([]() { ap::ArgumentList al0 {{}}; }());
+        }
 
-        INFO("constructor shoudl fail because first arg is optional");
-        CHECK_THROWS([]() { ap::ArgumentList al0 {{"arg0", true}, {"arg1", false}, {"arg2", false}}; }());
+        {
+            INFO("constructor shoudl fail because first arg is optional");
+            CHECK_THROWS([]() { ap::ArgumentList al0 {{"arg0", true}, {"arg1", false}, {"arg2", false}}; }());
+        }
 
-        INFO("constructor shoudl fail because first arg is noName");
-        CHECK_THROWS([]() {
-            ap::ArgumentList al0 {{ap::Argument::noName, false}, {"arg1", false}, {"arg2", false}};
-        }());
+        {
+            INFO("constructor shoudl fail because first arg is noName");
+            CHECK_THROWS([]() {
+                ap::ArgumentList al0 {{ap::Argument::noName, false}, {"arg1", false}, {"arg2", false}};
+            }());
+        }
     }
 
     SECTION("getArgs") {
@@ -42,10 +56,21 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
         CHECK_THAT(test0, Catch::Matchers::Equals(v0));
     }
 
-    SECTION("size") {
+    SECTION("getStrArgs") {
         ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
-        CHECK(al0.size() == 3);
+        std::vector v0 {"arg0", "arg1", "arg2"};
+
+        const auto test0 = al0.getStrArgs();
+        CHECK_THAT(test0, Catch::Matchers::Equals(v0));
     }
+
+    SECTION("operator[]") {
+        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
+        CHECK_THAT(al0[0].value(), Catch::Matchers::Equals("arg0"));
+        CHECK(al0[2].value() == nullptr);
+        CHECK_FALSE(al0[3]);
+    }
+
 
 
     SECTION("operator==") {
@@ -54,7 +79,9 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
         ap::ArgumentList al2 {{"arg0", false}, {"arg1", true}, {"arg2", true}};
         ap::ArgumentList al3 {{"arg1", false}, {"arg1", true}, {"arg2", true}};
 
+        CHECK(al0 == al0);
         CHECK(al0 == al1);
+        CHECK(al1 == al0);
         CHECK(al0 == al2);
         CHECK_FALSE(al0 == al3);
     }
@@ -65,19 +92,15 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
         ap::ArgumentList al2 {{"arg0", false}, {"arg1", true}, {"arg2", true}};
         ap::ArgumentList al3 {{"arg1", false}, {"arg1", true}, {"arg2", true}};
 
+        CHECK_FALSE(al0 != al0);
         CHECK_FALSE(al0 != al1);
         CHECK_FALSE(al0 != al2);
         CHECK(al0 != al3);
     }
 
-    SECTION("operator[]") {
-        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {ap::Argument::noName, false}};
-        CHECK_THAT(al0[0].value(), Catch::Matchers::Equals("arg0"));
-        CHECK(al0[2].value() == nullptr);
-        CHECK_FALSE(al0[3]);
-    }
 
     SECTION("isSame") {
+        //TODO: test optional args
         // no data
         std::array args0 {"serf", "arg0", "arg1", "arg2"};
         std::span<const char *> s0 {&args0.data()[1], args0.size() - 1};
@@ -141,6 +164,11 @@ TEST_CASE("ArgumentList", "[argparse][ArgumentList]") {
             CHECK_THAT(ov2.value()[1], Catch::Matchers::Equals("world"));
         }
     }
+
+    SECTION("size") {
+        ap::ArgumentList al0 {{"arg0", false}, {"arg1", false}, {"arg2", false}};
+        CHECK(al0.size() == 3);
+    }
 }
 
 
@@ -182,8 +210,31 @@ TEST_CASE("ParseResult", "[argparse][ParseResult]") {
 }
 
 
-// TEST_CASE("ArgParse", "[argparse][ArgParse][check]") {
-// SECTION("Constructor") {
+TEST_CASE("ArgParse", "[argparse][ArgParse][check]") {
+    SECTION("Constructor") {
+        CHECK_NOTHROW([]() { ap::ArgParse ap {}; }());
+    }
 
-//}
-//}
+    SECTION("add/getArgLists") {
+        auto ap0 = ap::ArgParse()
+                       .add({{"arg0", false}, {"arg1", true}, {ap::Argument::noName, false}})
+                       .add({{"arg0", false}, {"arg2", true}, {ap::Argument::noName, false}});
+        std::vector<ap::ArgumentList> test0 {
+            {{"arg0", false}, {"arg1", true}, {ap::Argument::noName, false}},
+            {{"arg0", false}, {"arg2", true}, {ap::Argument::noName, false}}
+        };
+        CHECK_THAT(ap0.getArgLists(), Catch::Matchers::Equals(test0));
+    }
+
+    SECTION("parse/noArgs") {
+        // TODO: test parsing (including optional args)
+
+        auto ap0 = ap::ArgParse()
+                       .add({{"arg0", false}, {"arg1", true}, {"arg2", false}})
+                       .add({{"arg0", false}, {"arg2", true}, {ap::Argument::noName, false}});
+        auto ap1 = ap::ArgParse()
+                       .add({{"arg0", false}, {"arg1", true}, {"arg2", false}})
+                       .add({{"arg0", false},  {ap::Argument::noName, false}, {"arg2", true}, {ap::Argument::noName, true}});
+
+    }
+}

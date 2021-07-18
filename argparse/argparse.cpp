@@ -5,17 +5,42 @@
 #include <span>
 #include <stdexcept>
 
+// TODO: use str_t instead of const char *
+// TODO: add possibility to add some valiation lambda for noName args
+
+ap::Argument::Argument(const char *argName): m_argName(argName) {};
+ap::Argument::operator const char *() const {
+    return m_argName;
+}
+
+ap::Argument::operator bool() const {
+    return m_argName;
+}
+
+namespace ap {
+bool operator==(const Argument &This, const char *other) {
+    if (This.m_argName != nullptr && other != nullptr) {
+        return std::strcmp(This.m_argName, other) == 0;
+    }
+    return This.m_argName == other;
+}
+
+bool operator==(const Argument &This, const Argument &other) {
+    return This == other.m_argName;
+}
+}  // namespace ap
+
 ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args): m_args(args) {
     checkList();
 }
 
 
 void ap::ArgumentList::checkList() {
-    if (m_args[0].argName == ap::Argument::noName) {
-        throw std::logic_error("1st argument cannot be optinal not noName");
-    }
     if (m_args.size() < 1) {
         throw std::logic_error("Empty argument list");
+    }
+    if (m_args[0] == ap::Argument::noName) {
+        throw std::logic_error("1st argument cannot be noName");
     }
 }
 
@@ -24,15 +49,9 @@ const std::vector<ap::Argument> &ap::ArgumentList::getArgs() const {
     return m_args;
 }
 
-std::vector<const char *> ap::ArgumentList::getStrArgs() const {
-    std::vector<const char *> out(m_args.size());
-    std::generate(std::begin(out), std::end(out), [n = 0u, this]() mutable { return m_args[n++].argName; });
-    return out;
-}
-
 std::optional<const char *> ap::ArgumentList::operator[](size_t index) const {
     if (m_args.size() > index) {
-        return m_args[index].argName;
+        return m_args[index];
     }
     return std::nullopt;
 }
@@ -43,7 +62,7 @@ bool ap::ArgumentList::operator==(const ArgumentList &other) const {
     }
 
     for (size_t i = 0; i < m_args.size(); i++) {
-        if (std::strcmp(m_args[i].argName, other.m_args[i].argName) != 0) {
+        if (m_args[i] != other.m_args[i]) {
             return false;
         }
     }
@@ -64,14 +83,14 @@ std::optional<std::vector<const char *>> ap::ArgumentList::isSame(std::span<cons
     }
 
     for (size_t i = 0; i < m_args.size(); i++) {
-        if (m_args[i].argName != ap::Argument::noName && std::strcmp(m_args[i].argName, query[i]) != 0) {
+        if (m_args[i] != ap::Argument::noName && m_args[i] != query[i]) {
             return std::nullopt;
         }
     }
 
     std::vector<const char *> out;
     std::copy_if(std::begin(query), std::end(query), std::back_inserter(out), [n = 0u, this](const char *) mutable {
-        if (m_args[n++].argName == ap::Argument::noName) {
+        if (m_args[n++] == ap::Argument::noName) {
             return true;
         }
         return false;
@@ -135,7 +154,7 @@ ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
 void ap::ArgParse::printDebug() {
     for (const auto &i : m_argLists) {
         for (const auto &j : i.getArgs()) {
-            spdlog::info("Name: {}", j.argName ? j.argName : "noName");
+            spdlog::info("Name: {}", j ? j : "noName");
         }
     }
 }

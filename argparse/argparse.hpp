@@ -22,15 +22,19 @@ namespace ap {
  * \see `ArgParse::noArgs()` for case with 0 arguments.
  */
 struct Argument {
-    // TODO: pretty sure this is wrong
-    bool operator==(const Argument &) const = default;
-    /*! \var argName argparse.hpp
-     * \brief Name of the argument
-     *
-     * This is the name by which it will be identified in the future
-     * \note if this value is `ap::Argument::noName` it is interprreted as "user can pass in any value and this value will be saved".
-     */
-    const char *argName;
+private:
+    const char *m_argName;
+
+public:
+    friend bool operator==(const Argument &This, const char *other);
+    friend bool operator==(const Argument &This, const Argument &other);
+
+    operator const char *() const;
+    operator bool() const;
+
+    Argument(const char *argName);
+
+
 
     /*! \var noName argparse.hpp
      * \brief Variable designating that an argument has no name.
@@ -48,6 +52,7 @@ struct Argument {
 class ArgumentList {
 private:
     std::vector<Argument> m_args;
+
 
 public:
     /*! \fn ap::ArgumentList::ArgumentList(std::initializer_list<Argument> args) argparse.hpp

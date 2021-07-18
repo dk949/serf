@@ -133,6 +133,7 @@ public:
     ArgParse &noArgs();
 
     const std::vector<ArgumentList> &getArgLists() const;
+    bool canBeNull() const;
 
     ParseResult parse(std::span<const char *> args);
     void printDebug();

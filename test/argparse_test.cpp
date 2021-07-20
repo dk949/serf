@@ -266,10 +266,10 @@ TEST_CASE("ArgParse::noArgs()", "[argparse][ArgParse][noArgs]") {
     CHECK_FALSE(ap1.canBeNull());
 }
 TEST_CASE("ArgParse::parse(std::span<const char *>)", "[argparse][ArgParse][parse]") {
-    auto ap0 = ap::ArgParse().add({"arg0", "arg1", "arg2"});
-    auto ap1 = ap::ArgParse().add({"arg0", "arg1", "arg2"}).add({"arg0", "arg1", "arg3"});
-    auto ap2 = ap::ArgParse().add({"arg0", "arg1", "arg2"}).add({"arg0", "arg1", "arg3"}).noArgs();
-    SECTION("Basics"){
+    SECTION("Basic no data") {
+        auto ap0 = ap::ArgParse().add({"arg0", "arg1", "arg2"});
+        auto ap1 = ap::ArgParse().add({"arg0", "arg1", "arg2"}).add({"arg0", "arg1", "arg3"});
+        auto ap2 = ap::ArgParse().add({"arg0", "arg1", "arg2"}).add({"arg0", "arg1", "arg3"}).noArgs();
         std::array args0 {"arg0", "arg1", "arg2"};
         std::span<const char *> sp0 {args0};
 
@@ -291,5 +291,22 @@ TEST_CASE("ArgParse::parse(std::span<const char *>)", "[argparse][ArgParse][pars
         CHECK_NOTHROW(ap2.parse(sp0));
         CHECK_NOTHROW(ap2.parse(sp1));
         CHECK_NOTHROW(ap2.parse(sp2));
+    }
+
+    SECTION("Basic data") {
+        auto ap0 = ap::ArgParse().add({"arg0", "arg1"});
+        auto ap1 = ap::ArgParse().add({"arg0", "arg1", ap::Argument::noName});
+
+        std::array args0 {"arg0", "arg1"};
+        std::span<const char *> sp0 {args0};
+
+        std::array args1 {"arg0", "arg1", "hello"};
+        std::span<const char *> sp1 {args1};
+
+        CHECK_NOTHROW(ap0.parse(sp0));
+        CHECK_THROWS(ap0.parse(sp1));
+
+        CHECK_THROWS(ap1.parse(sp0));
+        CHECK_NOTHROW(ap1.parse(sp1));
     }
 }

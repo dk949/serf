@@ -11,6 +11,7 @@ set(EXE_DIR ${CMAKE_SOURCE_DIR}/src)
 set(ARGPARSE_NAME argparse)
 set(ARGPARSE_DIR ${CMAKE_SOURCE_DIR}/argparse)
 
+include(cmake/CompileCommands.cmake)
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
 
@@ -19,7 +20,10 @@ add_library(project_options INTERFACE)
 target_compile_features(project_options INTERFACE cxx_std_20)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    option(ENABLE_BUILD_WITH_TIME_TRACE "Enable -ftime-trace to generate time tracing .json files on clang" OFF)
+    option(
+        ENABLE_BUILD_WITH_TIME_TRACE
+        "Enable -ftime-trace to generate time tracing .json files on clang" OFF
+        )
     if (ENABLE_BUILD_WITH_TIME_TRACE)
         target_compile_options(project_options INTERFACE -ftime-trace)
     endif ()
@@ -51,30 +55,27 @@ include(cmake/StaticAnalyzers.cmake)
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
 
-
 # Very basic PCH example
 option(ENABLE_PCH "Enable Precompiled Headers" OFF)
 if (ENABLE_PCH)
-    # This sets a global PCH parameter, each project will build its own PCH, which is a good idea if any #define's change
+    # This sets a global PCH parameter, each project will build its own PCH, which is a good idea if
+    # any #define's change
     #
     # consider breaking this out per project as necessary
     target_precompile_headers(
-            project_options
-            INTERFACE
-            <vector>
-            <string>
-            <map>
-            <utility>)
+        project_options
+        INTERFACE
+        <vector>
+        <string>
+        <map>
+        <utility>
+        )
 endif ()
 
 # These Libs are needed by the project
-set(CONAN_EXTRA_REQUIRES
-    "libgit2/1.1.0"
-    "nlohmann_json/3.9.1"
-    )
+set(CONAN_EXTRA_REQUIRES "libgit2/1.1.0" "nlohmann_json/3.9.1")
 
 set(CONAN_EXTRA_OPTIONS "")
-
 
 include(cmake/Conan.cmake)
 run_conan()

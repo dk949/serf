@@ -126,9 +126,14 @@ TEST_CASE("ArgumentList::operator!=(const ArgumentList &)", "[argparse][Argument
 }
 
 TEST_CASE("ArgumentList::isSame(std::span<const char *>)", "[argparse][ArgumentList][isSame]") {
-    // should be matched by al0_0, but not al0_1, al1_0 or al1_2
+    // should be matched by al0_0, but not al0_1.
     std::array args0 {"serf", "arg0", "arg1", "arg2"};
     std::span<const char *> s0 {&args0.data()[1], args0.size() - 1};
+    /*
+     * Note: ideally it wouldn't match al1_0 or al1_2 either,
+     * but that's impossible without having the full list of arguments and only ArgParse has that.
+     * It will be possible to reject al1_0 and al1_2 in ArgParse::parse(), but not here.
+     */
 
     // should be matched by al1_0, but not al1_1
     std::array args1 {"serf", "arg0", "arg1", "hello"};
@@ -160,11 +165,13 @@ TEST_CASE("ArgumentList::isSame(std::span<const char *>)", "[argparse][ArgumentL
         auto ov1 = al0_1.isSame(s0);
         CHECK_FALSE(ov1);
 
+        /* See note abovce
         auto ov2 = al1_0.isSame(s0);
         CHECK_FALSE(ov2);
 
         auto ov3 = al1_2.isSame(s0);
         CHECK_FALSE(ov3);
+        */
     }
 
     SECTION("single data") {
@@ -231,12 +238,13 @@ TEST_CASE("ParseResult::data()", "[argparse][ParseResult][data]") {
 
 
 
-//     _              ____
-//    / \   _ __ __ _|  _ \ __ _ _ __ ___  ___
-//   / _ \ | '__/ _` | |_) / _` | '__/ __|/ _ \
-//  / ___ \| | | (_| |  __/ (_| | |  \__ \  __/
-// /_/   \_\_|  \__, |_|   \__,_|_|  |___/\___|
-//              |___/
+/*     _              ____
+      / \   _ __ __ _|  _ \ __ _ _ __ ___  ___
+     / _ \ | '__/ _` | |_) / _` | '__/ __|/ _ \
+    / ___ \| | | (_| |  __/ (_| | |  \__ \  __/
+   /_/   \_\_|  \__, |_|   \__,_|_|  |___/\___|
+                |___/
+*/
 
 TEST_CASE("ArgParse::ArgParse()", "[argparse][ArgParse][Constructor]") {
     CHECK_NOTHROW([]() { ap::ArgParse ap {}; }());
@@ -256,4 +264,32 @@ TEST_CASE("ArgParse::noArgs()", "[argparse][ArgParse][noArgs]") {
     auto ap1 = ap::ArgParse();
     CHECK(ap0.canBeNull());
     CHECK_FALSE(ap1.canBeNull());
+}
+TEST_CASE("ArgParse::parse(std::span<const char *>)", "[argparse][ArgParse][parse]") {
+    auto ap0 = ap::ArgParse().add({"arg0", "arg1", "arg2"});
+    auto ap1 = ap::ArgParse().add({"arg0", "arg1", "arg2"}).add({"arg0", "arg1", "arg3"});
+    auto ap2 = ap::ArgParse().add({"arg0", "arg1", "arg2"}).add({"arg0", "arg1", "arg3"}).noArgs();
+    SECTION("Basics"){
+        std::array args0 {"arg0", "arg1", "arg2"};
+        std::span<const char *> sp0 {args0};
+
+        std::array args1 {"arg0", "arg1", "arg3"};
+        std::span<const char *> sp1 {args1};
+
+        std::array<const char *, 0> args2 {};
+        std::span<const char *> sp2 {args2};
+
+
+        CHECK_NOTHROW(ap0.parse(sp0));
+        CHECK_THROWS(ap0.parse(sp1));
+        CHECK_THROWS(ap0.parse(sp2));
+
+        CHECK_NOTHROW(ap1.parse(sp0));
+        CHECK_NOTHROW(ap1.parse(sp1));
+        CHECK_THROWS(ap1.parse(sp2));
+
+        CHECK_NOTHROW(ap2.parse(sp0));
+        CHECK_NOTHROW(ap2.parse(sp1));
+        CHECK_NOTHROW(ap2.parse(sp2));
+    }
 }

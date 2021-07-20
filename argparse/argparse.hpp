@@ -71,8 +71,6 @@ public:
 
     const std::vector<Argument> &getArgs() const;
 
-    std::vector<const char *> getStrArgs() const;
-
 
     /*! \fn std::optional<const char *> ap::ArgumentList::operator[](size_t index) const argparse.hpp
      * \brief  Get the `argName` of the `index`<sup>th</sup> `ap::Argument`;
@@ -94,7 +92,6 @@ public:
 
     /*! \fn size_t ap::ArgumentList::size() const argparse.hpp
      * \brief get the number of arguments in the list
-     *
      * \return number of arguemnts
      */
     size_t size() const;

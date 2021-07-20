@@ -136,8 +136,17 @@ const std::vector<ap::ArgumentList> &ap::ArgParse::getArgLists() const {
     return m_argLists;
 }
 
-bool ap::ArgParse::canBeNull() const{
+bool ap::ArgParse::canBeNull() const {
     return m_canBeNull;
+}
+
+
+std::vector<const char *> getStrArgs(const std::vector<ap::Argument> &other) {
+    std::vector<const char *> out(other.size());
+    std::transform(std::begin(other), std::end(other), std::back_inserter(out), [](const auto &elem) {
+        return static_cast<const char *>(elem);
+    });
+    return out;
 }
 
 ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
@@ -147,7 +156,7 @@ ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
 
     for (const auto &command : m_argLists) {
         if (auto res = command.isSame(args)) {
-            return {command.getStrArgs(), res};
+            return {getStrArgs(command.getArgs()), res};
         }
     }
     throw std::logic_error("Could not parse");

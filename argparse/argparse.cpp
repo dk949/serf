@@ -74,7 +74,7 @@ std::optional<std::vector<std::string>> ap::ArgumentList::isSame(std::span<const
     }
 
     std::vector<std::string> out;
-    std::copy_if(std::begin(query), std::end(query), std::back_inserter(out), [n = 0u, this](const char *) mutable {
+    std::copy_if(std::begin(query), std::end(query), std::back_inserter(out), [n = 0u, this](const std::string &) mutable {
         if (m_args[n++] == ap::noName) {
             return true;
         }
@@ -93,9 +93,8 @@ bool ap::ParseResult::is(std::string argName) const {
 }
 
 bool ap::ParseResult::has(std::string argName) const {
-    return std::find_if(std::begin(m_args) + 1, std::end(m_args), [&argName](const auto &arg) {
-        return arg == argName;
-    }) != std::end(m_args);
+    return std::find_if(std::begin(m_args) + 1, std::end(m_args), [&argName](const auto &arg) { return arg == argName; }) !=
+           std::end(m_args);
 }
 
 const std::optional<std::vector<std::string>> &ap::ParseResult::data() const {
@@ -138,17 +137,17 @@ ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
 
 
     std::sort(std::begin(m_argLists), std::end(m_argLists), [](const ArgumentList &a, const ArgumentList &b) {
-        return a.getDataScore() > b.getDataScore();
+        return a.getDataScore() < b.getDataScore();
     });
 
 
-    if (args.size() == 0 && m_canBeNull) {
+    if (args.empty() && m_canBeNull) {
         return {{}, std::nullopt};
     }
 
     for (const auto &command : m_argLists) {
         if (auto res = command.isSame(args)) {
-            return {command.getArgs(), res};
+            return {command.getArgs(), res->empty() ? std::nullopt : res};
         }
     }
     throw std::logic_error("Could not parse");

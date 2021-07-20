@@ -279,13 +279,13 @@ TEST_CASE("ArgParse::parse(std::span<const char *>)", "[argparse][ArgParse][pars
         CHECK(pr1.is("arg0"));
         CHECK(pr1.has("arg1"));
         CHECK_FALSE(pr1.has("arg2"));
-        CHECK(pr0.data());
-        CHECK_THAT(pr0.data().value(), Catch::Matchers::Equals(std::vector<std::string> {"hello"}));
+        CHECK(pr1.data());
+        CHECK_THAT(pr1.data().value(), Catch::Matchers::Equals(std::vector<std::string> {"hello"}));
 
         CHECK(pr2.is("arg0"));
         CHECK_FALSE(pr2.has("arg1"));
         CHECK(pr2.has("arg2"));
-        CHECK(pr0.data());
-        CHECK_THAT(pr0.data().value(), Catch::Matchers::Equals(std::vector<std::string> {"world"}));
+        CHECK(pr2.data());
+        CHECK_THAT(pr2.data().value(), Catch::Matchers::Equals(std::vector<std::string> {"world"}));
     }
 }

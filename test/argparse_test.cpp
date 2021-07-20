@@ -309,4 +309,33 @@ TEST_CASE("ArgParse::parse(std::span<const char *>)", "[argparse][ArgParse][pars
         CHECK_THROWS(ap1.parse(sp0));
         CHECK_NOTHROW(ap1.parse(sp1));
     }
+
+    SECTION("Named arguments should not be mistaken for data") {
+        auto ap0 = ap::ArgParse().add({"arg0", "arg1", "arg2"});
+        auto ap1 = ap::ArgParse().add({"arg0", "arg1", ap::Argument::noName});
+        auto ap2 = ap::ArgParse().add({"arg0", ap::Argument::noName, "arg2"});
+
+        std::array args0 {"arg0", "arg1", "arg2"};
+        std::span<const char *> sp0 {args0};
+
+        std::array args1 {"arg0", "arg1", "hello"};
+        std::span<const char *> sp1 {args1};
+
+        std::array args2 {"arg0", "hello", "arg2"};
+        std::span<const char *> sp2 {args2};
+
+        CHECK_NOTHROW(ap0.parse(sp0));
+        CHECK_THROWS(ap0.parse(sp1));
+        CHECK_THROWS(ap0.parse(sp2));
+
+        CHECK_NOTHROW(ap1.parse(sp1));
+        // Fail
+        CHECK_THROWS(ap1.parse(sp0));
+        CHECK_THROWS(ap1.parse(sp2));
+
+        CHECK_NOTHROW(ap2.parse(sp2));
+        // Fail
+        CHECK_THROWS(ap2.parse(sp0));
+        CHECK_THROWS(ap2.parse(sp1));
+    }
 }

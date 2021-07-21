@@ -24,9 +24,9 @@ jobs:
 
     - name: Bodge /usr/bin/c++
       run: |
-        rm -rf /usr/bin/c++ || exit 1
+        sudo rm -rf /usr/bin/c++ || exit 1
         if [ -f /usr/bin/gcc-11 ]; then
-          ln -s /usr/bin/gcc-11 /usr/bin/c++;
+          sudo ln -s /usr/bin/gcc-11 /usr/bin/c++;
         else;
           exit 1;
         fi

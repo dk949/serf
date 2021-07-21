@@ -22,25 +22,14 @@ jobs:
         version: 11
         platform: x64
 
-    - name: Cache conan
-      id: cache-conan
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-          #TODO: this will not grab a new version when it comes out
-        key: ${{ runner.os }}-pip-conan-1.38
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
-    - name: Cache dependencies
-      id: cache-deps
-      uses: actions/cache@v2
-      with:
-        path: ~/.conan
-        key: ${{ runner.os }}-conan-${{ hashFiles('CMakeLists.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-conan-
-
+    - name: Bodge /usr/bin/c++
+      run: |
+        rm -rf /usr/bin/c++ || exit 1
+        if [ -f /usr/bin/gcc-11 ]; then
+          ln -s /usr/bin/gcc-11 /usr/bin/c++;
+        else;
+          exit 1;
+        fi
 
     - name: Configure conan
       run: pip3 install conan; conan -v

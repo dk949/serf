@@ -6,7 +6,6 @@ on:
 
 env:
   BUILD_TYPE: Release
-  CXX: /usr/bin/gcc-11
 
 
 jobs:

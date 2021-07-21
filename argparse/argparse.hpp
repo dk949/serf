@@ -36,7 +36,7 @@ public:
 
     bool operator==(const ArgumentList &other) const;
 
-    std::optional<std::vector<std::string>> isSame(const std::span<const char *> args) const;
+    std::optional<std::vector<std::string>> isSame(const std::span<const char *> query) const;
 
     size_t size() const;
 

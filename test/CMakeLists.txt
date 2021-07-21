@@ -21,6 +21,7 @@ add_library(catch_main STATIC catch_main.cpp)
 target_link_libraries(catch_main PUBLIC CONAN_PKG::catch2 ${TEST_EXTRA_LIBS})
 target_link_libraries(catch_main PRIVATE project_options)
 
+
 # ############### Arghandler ################
 set(ARGHANDLER_TEST_FILES arghandler_test.cpp ../src/arghandler.cpp ../src/arghandler.hpp)
 

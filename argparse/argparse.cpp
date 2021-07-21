@@ -35,7 +35,7 @@ const std::vector<std::string> &ap::ArgumentList::getArgs() const {
 
 size_t ap::ArgumentList::getDataScore() const {
     return std::accumulate(std::begin(m_args), std::end(m_args), 0U, [n = 1U](size_t a, const std::string &b) mutable {
-        return a + (b.data() == ap::noName) * n++;
+        return a + static_cast<size_t>(b == ap::noName) * n++;
     });
 }
 
@@ -79,11 +79,9 @@ std::optional<std::vector<std::string>> ap::ArgumentList::isSame(std::span<const
     }
 
     std::vector<std::string> out;
-    std::copy_if(std::begin(query), std::end(query), std::back_inserter(out), [n = 0u, this](const std::string &) mutable {
-        if (m_args[n++] == ap::noName) {
-            return true;
-        }
-        return false;
+    // NOLINTNEXTLINE [hicpp-named-parameter,readability-named-parameter]// this parameter is not needed
+    std::copy_if(std::begin(query), std::end(query), std::back_inserter(out), [n = 0U, this](const std::string &) mutable {
+        return m_args[n++] == ap::noName;
     });
     return out;
 }

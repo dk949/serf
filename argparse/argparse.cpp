@@ -103,7 +103,7 @@ const std::optional<std::vector<std::string>> &ap::ParseResult::data() const {
 
 
 
-ap::ArgParse &ap::ArgParse::add(std::initializer_list<std::string> argList) {
+ap::ArgParse &ap::ArgParse::add(std::initializer_list<std::string> argList, [[maybe_unused]] std::string desc) {
     m_argLists.emplace_back(argList);
 
     return *this;

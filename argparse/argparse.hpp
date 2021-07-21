@@ -76,7 +76,7 @@ class ArgParse {
 public:
     ArgParse() = default;
 
-    ArgParse &add(std::initializer_list<std::string> argList);
+    ArgParse &add(std::initializer_list<std::string> argList, std::string desc = {});
     ArgParse &noArgs();
 
     const std::vector<ArgumentList> &getArgLists() const;
@@ -86,5 +86,14 @@ public:
     void printDebug();
 };
 
+constexpr std::span<const char *> getArgsSpan(int argc, const char **argv) {
+    if (argc > 1) {
+        return std::span<const char *> {std::next(argv), static_cast<size_t>(argc) - 1u};
+    }
+    return std::span<const char *> {};
+}
 }  // namespace ap
+
+
+
 #endif  // ARGPARSE_HPP

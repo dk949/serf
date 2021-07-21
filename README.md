@@ -1,6 +1,7 @@
 # serf package manager
 [![codecov](https://codecov.io/gh/dk949/serf/branch/dev/graph/badge.svg?token=VTK1DM5RYI)](https://codecov.io/gh/dk949/serf)
 ![Biuld](https://github.com/dk949/serf/actions/workflows/cmake.yml/badge.svg)
+[![MIT License][license-badge]](LICENSE.md)
 ## Basic usage (commands)
 ### `serf init`
 * Initialise current directory.

@@ -1,16 +1,13 @@
 #ifndef ARGPARSE_HPP
 #define ARGPARSE_HPP
 
-#ifdef DEBUG
-#include <csignal>
-#include <spdlog/spdlog.h>
-#endif
-
-#include <compare>
-#include <optional>
-#include <span>
-#include <string>
-#include <vector>
+#include <cstddef>           // for size_t
+#include <initializer_list>  // for initializer_list
+#include <iterator>          // for next
+#include <optional>          // for optional
+#include <span>              // for span
+#include <string>            // for string
+#include <vector>            // for vector
 
 namespace ap {
 

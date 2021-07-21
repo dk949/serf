@@ -1,7 +1,7 @@
 #include "../argparse/argparse.hpp"
 
-#include <catch2/catch.hpp>
-#include <iostream>
+#include <array>             // for array, array<>::value_type
+#include <catch2/catch.hpp>  // for operator""_catch_sr, AssertionHandler
 //     _                                         _   _     _     _
 //    / \   _ __ __ _ _   _ _ __ ___   ___ _ __ | |_| |   (_)___| |_
 //   / _ \ | '__/ _` | | | | '_ ` _ \ / _ \ '_ \| __| |   | / __| __|

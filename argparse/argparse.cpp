@@ -1,11 +1,16 @@
 #include "argparse.hpp"
 
-#include <cstring>
-#include <numeric>
-#include <span>
-#include <stdexcept>
+#ifdef DEBUG
+#include <fmt/format.h>     // for format_to
+#include <spdlog/spdlog.h>  // for info
+#endif
 
-// TODO: use str_t instead of const char *
+#include <algorithm>  // for copy_if, find_if, sort
+#include <numeric>    // for accumulate
+#include <span>       // for span
+#include <stdexcept>  // for logic_error
+#include <utility>    // for move
+
 // TODO: add possibility to add some valiation lambda for noName args
 
 ap::ArgumentList::ArgumentList(std::initializer_list<std::string> args): m_args(args) {

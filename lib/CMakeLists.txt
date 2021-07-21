@@ -1,21 +1,12 @@
+link_compile_commands()
+
 set(LIB_NAME gitpac)
 
+set(SOURCE_FILES gitpac.cpp)
 
-set(SOURCE_FILES
-    gitpac.cpp
-    )
-
-set(HEADER_FILES
-    gitpac.hpp
-    )
-
+set(HEADER_FILES gitpac.hpp)
 
 add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-add_custom_target(lib_compile_commands ALL
-    COMMAND ${CMAKE_COMMAND} -E create_symlink  ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}/lib/compile_commands.json)
-
 
 target_include_directories(${LIB_NAME} SYSTEM PRIVATE ${CONAN_INCLUDE_DIRS_SPDLOG})
 target_include_directories(${LIB_NAME} SYSTEM PRIVATE ${CONAN_INCLUDE_DIRS_NLOHMANN_JSON})
@@ -23,9 +14,10 @@ target_include_directories(${LIB_NAME} SYSTEM PRIVATE ${CONAN_INCLUDE_DIRS_LIBGI
 
 target_link_libraries(
     ${LIB_NAME}
-    PRIVATE project_options
-    project_warnings
-    CONAN_PKG::spdlog
-    CONAN_PKG::nlohmann_json
-    CONAN_PKG::libgit2
+    PRIVATE
+        project_options
+        project_warnings
+        CONAN_PKG::spdlog
+        CONAN_PKG::nlohmann_json
+        CONAN_PKG::libgit2
     )

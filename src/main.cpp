@@ -1,13 +1,17 @@
-#include "arghandler.hpp"
-#include "gitpac.hpp"
+#include "arghandler.hpp"  // for getArgs
+#include "argparse.hpp"    // for getArgsSpan
 
-#include <iostream>
-#include <spdlog/spdlog.h>
+#include <memory>           // for allocator
+#include <spdlog/spdlog.h>  // for set_pattern
+
+
 
 int main(int argc, const char **argv) {
     spdlog::set_pattern("[%l]: %v");
 
-    srf::getArgs(argc, argv);
+
+    srf::getArgs(ap::getArgsSpan(argc, argv));
+
 
     return 0;
 }

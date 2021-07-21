@@ -1,10 +1,10 @@
 #ifndef ARGHANDLER_HPP
 #define ARGHANDLER_HPP
 
+#include <span>
 
 namespace srf{
-
-    void getArgs([[maybe_unused]] int argc, [[maybe_unused]] const char **argv);
+    void getArgs(std::span<const char *> args);
 }
 
 #endif // ARGHANDLER_HPP

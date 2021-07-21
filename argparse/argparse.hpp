@@ -9,6 +9,7 @@
 #include <compare>
 #include <optional>
 #include <span>
+#include <string>
 #include <vector>
 
 namespace ap {

@@ -6,8 +6,7 @@ on:
 
 env:
   BUILD_TYPE: Release
-  CC: /usr/local/bin/cc
-  CXX: /usr/local/bin/c++
+  CXX: /usr/bin/gcc-11
 
 
 jobs:

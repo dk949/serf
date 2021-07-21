@@ -18,8 +18,8 @@ ap::ArgumentList::ArgumentList(std::initializer_list<std::string> args): m_args(
 }
 
 
-void ap::ArgumentList::checkList() {
-    if (m_args.size() < 1) {
+void ap::ArgumentList::checkList() const {
+    if (m_args.empty()) {
         throw std::logic_error("Empty argument list");
     }
     if (m_args[0] == ap::noName) {
@@ -34,7 +34,7 @@ const std::vector<std::string> &ap::ArgumentList::getArgs() const {
 
 
 size_t ap::ArgumentList::getDataScore() const {
-    return std::accumulate(std::begin(m_args), std::end(m_args), 0u, [n = 1u](size_t a, const std::string &b) mutable {
+    return std::accumulate(std::begin(m_args), std::end(m_args), 0U, [n = 1U](size_t a, const std::string &b) mutable {
         return a + (b.data() == ap::noName) * n++;
     });
 }
@@ -93,11 +93,11 @@ std::optional<std::vector<std::string>> ap::ArgumentList::isSame(std::span<const
 ap::ParseResult::ParseResult(std::vector<std::string> args, std::optional<std::vector<std::string>> data):
         m_args(std::move(args)), m_data(std::move(data)) {}
 
-bool ap::ParseResult::is(std::string argName) const {
+bool ap::ParseResult::is(const std::string &argName) const {
     return m_args[0] == argName;
 }
 
-bool ap::ParseResult::has(std::string argName) const {
+bool ap::ParseResult::has(const std::string &argName) const {
     return std::find_if(std::begin(m_args) + 1, std::end(m_args), [&argName](const auto &arg) { return arg == argName; }) !=
            std::end(m_args);
 }
@@ -108,7 +108,7 @@ const std::optional<std::vector<std::string>> &ap::ParseResult::data() const {
 
 
 
-ap::ArgParse &ap::ArgParse::add(std::initializer_list<std::string> argList, [[maybe_unused]] std::string desc) {
+ap::ArgParse &ap::ArgParse::add(std::initializer_list<std::string> argList, [[maybe_unused]] const std::string &desc) {
     m_argLists.emplace_back(argList);
 
     return *this;
@@ -151,6 +151,7 @@ ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
     }
 
     for (const auto &command : m_argLists) {
+        // cppcheck-suppress useStlAlgorithm; false positive for find_if
         if (auto res = command.isSame(args)) {
             return {command.getArgs(), res->empty() ? std::nullopt : res};
         }
@@ -160,7 +161,7 @@ ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
 
 
 #ifdef DEBUG
-void ap::ArgParse::printDebug() {
+void ap::ArgParse::printDebug() const {
     for (const auto &i : m_argLists) {
         for (const auto &j : i.getArgs()) {
             spdlog::info("Name: {}", !j.empty() ? j : "noName");
@@ -168,5 +169,5 @@ void ap::ArgParse::printDebug() {
     }
 }
 #else
-void ap::ArgParse::printDebug() {}
+void ap::ArgParse::printDebug() const {}
 #endif

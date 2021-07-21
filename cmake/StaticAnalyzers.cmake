@@ -1,5 +1,5 @@
-option(ENABLE_CPPCHECK "Enable static analysis with cppcheck" OFF)
-option(ENABLE_CLANG_TIDY "Enable static analysis with clang-tidy" OFF)
+option(ENABLE_CPPCHECK "Enable static analysis with cppcheck" ON)
+option(ENABLE_CLANG_TIDY "Enable static analysis with clang-tidy" ON)
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Enable static analysis with include-what-you-use" OFF)
 
 if (ENABLE_CPPCHECK)
@@ -8,12 +8,15 @@ if (ENABLE_CPPCHECK)
         set(
             CMAKE_CXX_CPPCHECK
             ${CPPCHECK}
-            --suppress=missingInclude
+            --suppress=unusedFunction
+            --suppress=missingIncludeSystem
+            --suppress=unmatchedSuppression
             --enable=all
             --inline-suppr
             --inconclusive
-            -i
-            ${CMAKE_SOURCE_DIR}/imgui/lib
+            -I ${LIB_DIR}
+            -I ${EXE_DIR}
+            -I ${ARGPARSE_DIR}
             )
     else ()
         message(SEND_ERROR "cppcheck requested but executable not found")

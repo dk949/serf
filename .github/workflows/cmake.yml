@@ -6,7 +6,7 @@ on:
 
 env:
   BUILD_TYPE: Release
-  CXX: /usr/bin/cxx
+  CXX: /usr/bin/c++
 
 
 jobs:

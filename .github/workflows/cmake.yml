@@ -1,5 +1,4 @@
 name: CMake
-
 on:
   pull_request:
     branches: [ trunk ]
@@ -102,8 +101,8 @@ jobs:
 
 
     - name: Upload coverage
-      uses: codecov/codecov-action@v2
       working-directory: ${{github.workspace}}/build
+      uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         directory: .

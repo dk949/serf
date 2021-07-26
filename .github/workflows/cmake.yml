@@ -15,6 +15,7 @@ env:
 
   # lcov
   LCOV_VERSION: 1.15
+  LCOV_BUILD_DIR: lcov_build
 
 
 jobs:
@@ -32,17 +33,8 @@ jobs:
         platform: x64
 
 
-    - name: Set up lcov
-      run: |
-        mkdir Iconv
-        cd Iconv
-        wget "https://github.com/linux-test-project/lcov/releases/download/v$LCOV_VERSION/lcov-$LCOV_VERSION.tar.gz"
-        tar -xzf "lcov-$LCOV_VERSION.tar.gz"
-        cd "lcov-$LCOV_VERSION"
-        sudo make install
-
-
-    - name: Cache
+    - name: Cache conan
+      id: cache-conan
       uses: actions/cache@v2
       env:
         cache-name: cache-conan-modules
@@ -51,6 +43,27 @@ jobs:
           ${{ env.CONAN_USER_HOME }}
           ~/.cache/pip
         key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('CMakeLists.txt') }}-${{ hashFiles('cmake/Conan.cmake') }}
+
+
+    - name: Cache lcov
+      id: cache-lcov
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-lcov
+      with:
+        path: ${{github.workspace}}/${{ env.LCOV_BUILD_DIR }}
+        key: lcov-${{ env.LCOV_VERSION }}
+
+
+    - name: Set up lcov
+      if: steps.cache-lcov.outputs.cache-hit != 'true'
+      run: |
+        mkdir $LCOV_BUILD_DIR
+        cd $LCOV_BUILD_DIR
+        wget "https://github.com/linux-test-project/lcov/releases/download/v$LCOV_VERSION/lcov-$LCOV_VERSION.tar.gz"
+        tar -xzf "lcov-$LCOV_VERSION.tar.gz"
+        cd "lcov-$LCOV_VERSION"
+        sudo make install
 
 
     - name: Configure conan

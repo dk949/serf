@@ -96,6 +96,7 @@ jobs:
     - name: Coverage
       working-directory: ${{github.workspace}}/build
       run: |
+        ctest
         lcov --capture --directory . --output-file coverage.info
         lcov --remove coverage.info '/usr/*' --output-file coverage.info
         lcov --remove coverage.info '*conan/*' --output-file coverage.info

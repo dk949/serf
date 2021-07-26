@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 
 # Set the project name to your project name, my project isn't very descriptive
 project(SerfProject CXX)

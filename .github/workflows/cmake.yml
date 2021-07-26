@@ -90,11 +90,10 @@ jobs:
 
     - name: Upload coverage
       uses: codecov/codecov-action@v2
+      working-directory: ${{github.workspace}}/build
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         directory: .
         env_vars: OS
         files: ./coverage.info
-        path_to_write_report: ./codecov_report.txt
-        verbose: true
 

@@ -5,13 +5,16 @@ on:
     branches: [ trunk ]
 
 env:
+  # cmake
   BUILD_TYPE: Release
-  #CXX: /usr/bin/c++
 
-  # Conan cache environment variables
+  # conan
   CONAN_SYSREQUIRES_MODE: enabled
   CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
   CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
+
+  # lcov
+  LCOV_VERSION: 1.15
 
 
 jobs:
@@ -21,11 +24,23 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+
     - name: Set up GCC
       uses: egor-tensin/setup-gcc@v1
       with:
         version: 11
         platform: x64
+
+
+    - name: Set up lcov
+      run: |
+        mkdir Iconv
+        cd Iconv
+        wget "https://github.com/linux-test-project/lcov/releases/download/v$LCOV_VERSION/lcov-$LCOV_VERSION.tar.gz"
+        tar -xzf "lcov-$LCOV_VERSION.tar.gz"
+        cd "lcov-$LCOV_VERSION"
+        sudo make install
+
 
     - name: Cache
       uses: actions/cache@v2
@@ -37,14 +52,6 @@ jobs:
           ~/.cache/pip
         key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('CMakeLists.txt') }}-${{ hashFiles('cmake/Conan.cmake') }}
 
-    #- name: Bodge /usr/bin/c++
-      #run: |
-        #sudo rm -rf /usr/bin/c++ || exit 1
-        #if [ -f /usr/bin/gcc-11 ]; then
-          #sudo ln -s /usr/bin/gcc-11 /usr/bin/c++;
-        #else
-          #exit 1;
-        #fi
 
     - name: Configure conan
       run: pip3 install conan; conan -v
@@ -63,12 +70,15 @@ jobs:
         -DENABLE_CACHE=OFF
         -DENABLE_DOXYGEN=OFF
 
+
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
 
     - name: Test
       working-directory: ${{github.workspace}}/build
       run: ctest -C ${{env.BUILD_TYPE}}
+
 
     - name: Coverage
       working-directory: ${{github.workspace}}/build
@@ -76,6 +86,7 @@ jobs:
         lcov --capture --directory . --output-file coverage.info
         lcov --remove coverage.info '/usr/*' --output-file coverage.info
         lcov --remove coverage.info '*conan/*' --output-file coverage.info
+
 
     - name: Upload coverage
       uses: codecov/codecov-action@v2

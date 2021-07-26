@@ -17,7 +17,8 @@ macro (run_conan)
         "catch2/2.13.6"
         OPTIONS
         ${CONAN_EXTRA_OPTIONS}
-        SETTINGS compiler.version=11
+        SETTINGS
+        compiler.version=11
         BASIC_SETUP
         CMAKE_TARGETS
         BUILD

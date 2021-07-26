@@ -1,4 +1,4 @@
-option(ENABLE_CPPCHECK "Enable static analysis with cppcheck" OFF)
+option(ENABLE_CPPCHECK "Enable static analysis with cppcheck" ON)
 option(ENABLE_CLANG_TIDY "Enable static analysis with clang-tidy" OFF)
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Enable static analysis with include-what-you-use" OFF)
 
@@ -8,15 +8,18 @@ if (ENABLE_CPPCHECK)
         set(
             CMAKE_CXX_CPPCHECK
             ${CPPCHECK}
-            --suppress=missingInclude
+            --suppress=unusedFunction
+            --suppress=missingIncludeSystem
+            --suppress=unmatchedSuppression
             --enable=all
             --inline-suppr
             --inconclusive
-            -i
-            ${CMAKE_SOURCE_DIR}/imgui/lib
+            -I ${LIB_DIR}
+            -I ${EXE_DIR}
+            -I ${ARGPARSE_DIR}
             )
     else ()
-        message(SEND_ERROR "cppcheck requested but executable not found")
+        message(WARNING "cppcheck requested but executable not found")
     endif ()
 endif ()
 
@@ -25,7 +28,7 @@ if (ENABLE_CLANG_TIDY)
     if (CLANGTIDY)
         set(CMAKE_CXX_CLANG_TIDY ${CLANGTIDY} -extra-arg=-Wno-unknown-warning-option)
     else ()
-        message(SEND_ERROR "clang-tidy requested but executable not found")
+        message(WARNING "clang-tidy requested but executable not found")
     endif ()
 endif ()
 
@@ -34,6 +37,6 @@ if (ENABLE_INCLUDE_WHAT_YOU_USE)
     if (INCLUDE_WHAT_YOU_USE)
         set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${INCLUDE_WHAT_YOU_USE})
     else ()
-        message(SEND_ERROR "include-what-you-use requested but executable not found")
+        message(WARNING "include-what-you-use requested but executable not found")
     endif ()
 endif ()

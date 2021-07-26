@@ -21,6 +21,7 @@ private:
 
 
 public:
+    // cppcheck-suppress noExplicitConstructor; it is implicit on purpose
     ArgumentList(std::initializer_list<std::string> args);
 
     ArgumentList() = delete;
@@ -35,19 +36,14 @@ public:
 
     bool operator==(const ArgumentList &other) const;
 
-    std::optional<std::vector<std::string>> isSame(const std::span<const char *> args) const;
+    std::optional<std::vector<std::string>> isSame(const std::span<const char *> query) const;
 
-
-    /*! \fn size_t ap::ArgumentList::size() const argparse.hpp
-     * \brief get the number of arguments in the list
-     * \return number of arguemnts
-     */
     size_t size() const;
 
 
 
 private:
-    void checkList();
+    void checkList() const;
 };
 
 
@@ -59,9 +55,9 @@ private:
 public:
     ParseResult(std::vector<std::string> args, std::optional<std::vector<std::string>> data);
 
-    bool is(std::string) const;
+    bool is(const std::string &) const;
 
-    bool has(std::string) const;
+    bool has(const std::string &) const;
 
     const std::optional<std::vector<std::string>> &data() const;
 };
@@ -74,14 +70,17 @@ class ArgParse {
 public:
     ArgParse() = default;
 
-    ArgParse &add(std::initializer_list<std::string> argList, std::string desc = {});
+    ArgParse &add(std::initializer_list<std::string> argList, const std::string &desc = {});
     ArgParse &noArgs();
 
     const std::vector<ArgumentList> &getArgLists() const;
     bool canBeNull() const;
 
     ParseResult parse(std::span<const char *> args);
-    void printDebug();
+
+
+    // cppcheck-suppress functionStatic; function can only be static in release mode
+    void printDebug() const;
 };
 
 constexpr std::span<const char *> getArgsSpan(int argc, const char **argv) {

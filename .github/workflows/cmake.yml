@@ -99,13 +99,11 @@ jobs:
         lcov --remove coverage.info '/usr/*' --output-file coverage.info
         lcov --remove coverage.info '*conan/*' --output-file coverage.info
 
-
     - name: Upload coverage
-      working-directory: ${{github.workspace}}/build
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        directory: .
+        directory: ${{ github.workspace }}/build
         env_vars: OS
         files: ./coverage.info
 

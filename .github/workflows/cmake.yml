@@ -97,15 +97,13 @@ jobs:
       working-directory: ${{github.workspace}}/build
       run: |
         ctest
-        lcov --capture --directory . --output-file coverage.info
-        lcov --remove coverage.info '/usr/*' --output-file coverage.info
-        lcov --remove coverage.info '*conan/*' --output-file coverage.info
+        bash <(curl -s https://codecov.io/bash) -x /usr/bin/gcov-11
 
-    - name: Upload coverage
-      uses: codecov/codecov-action@v2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        directory: ${{ github.workspace }}/build
-        env_vars: OS
-        files: ./coverage.info
+    #- name: Upload coverage
+      #uses: codecov/codecov-action@v2
+      #with:
+        #token: ${{ secrets.CODECOV_TOKEN }}
+        #directory: ${{ github.workspace }}/build
+        #env_vars: OS
+        #files: ./coverage.info
 

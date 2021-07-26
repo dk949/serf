@@ -62,8 +62,9 @@ jobs:
         wget "https://github.com/linux-test-project/lcov/releases/download/v$LCOV_VERSION/lcov-$LCOV_VERSION.tar.gz"
         tar -xzf "lcov-$LCOV_VERSION.tar.gz"
         cd "lcov-$LCOV_VERSION"
-        sudo make install
 
+    - name: Install lcov
+      run: cd "$LCOV_BUILD_DIR/lcov-$LCOV_VERSION" && sudo make install
 
     - name: Configure conan
       run: pip3 install conan; conan -v

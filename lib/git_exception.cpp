@@ -1,40 +1,43 @@
 #include "git_exception.hpp"
 
+#include "decodeError.hpp"
+#include "decodeKlass.hpp"
 
-gp::GitException::GitException(int error,  //
+
+gp::GitException::GitException(git_error_code error,  //
     const git_error *e):
         std::exception(),                   //
         m_message(fmt::format("{}/{}: {}",  //
-            error,
-            e->klass,
+            decodeError(error),
+            decodeKlass(static_cast<git_error_t>(e->klass)),
             e->message)) {}
 
-gp::GitException::GitException(int error,  //
+gp::GitException::GitException(git_error_code error,  //
     const git_error *e,
     const char *userMessage):
         std::exception(),                         //
         m_message(fmt::format("{}/{}: {} // {}",  //
-            error,
-            e->klass,
+            decodeError(error),
+            decodeKlass(static_cast<git_error_t>(e->klass)),
             e->message,
             userMessage)) {}
 
-gp::GitException::GitException(int error,  //
-    int klass,
+gp::GitException::GitException(git_error_code error,  //
+    git_error_t klass,
     const char *message):
         std::exception(),                   //
         m_message(fmt::format("{}/{}: {}",  //
-            error,
-            klass,
+            decodeError(error),
+            decodeKlass(klass),
             message)) {}
 
-gp::GitException::GitException(int error,  //
-    int klass,
+gp::GitException::GitException(git_error_code error,  //
+    git_error_t klass,
     const char *message,
     const char *userMessage):
         std::exception(),                         //
         m_message(fmt::format("{}/{}: {} // {}",  //
-            error,
-            klass,
+            decodeError(error),
+            decodeKlass(klass),
             message,
             userMessage)) {}

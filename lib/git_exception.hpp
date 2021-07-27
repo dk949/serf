@@ -12,10 +12,10 @@ private:
     std::string m_message;
 
 public:
-    GitException(int error, const git_error *e);
-    GitException(int error, const git_error *e, const char *userMessage);
-    GitException(int error, int klass, const char *message);
-    GitException(int error, int klass, const char *message, const char *userMessage);
+    GitException(git_error_code error, const git_error *e);
+    GitException(git_error_code error, const git_error *e, const char *userMessage);
+    GitException(git_error_code error, git_error_t klass, const char *message);
+    GitException(git_error_code error, git_error_t klass, const char *message, const char *userMessage);
 
 
     const char *what() const noexcept override {

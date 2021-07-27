@@ -99,6 +99,7 @@ jobs:
         lcov --capture --directory . --output-file coverage.info --gcov-tool /usr/bin/gcov-11
         lcov --remove coverage.info '/usr/*' --output-file coverage.info --gcov-tool /usr/bin/gcov-11
         lcov --remove coverage.info '*conan/*' --output-file coverage.info --gcov-tool /usr/bin/gcov-11
+        lcov --remove coverage.info '*test/*' --output-file coverage.info --gcov-tool /usr/bin/gcov-11
         lcov --list coverage.info --gcov-tool /usr/bin/gcov-11
 
     - name: Upload coverage

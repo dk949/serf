@@ -96,10 +96,10 @@ jobs:
     - name: Coverage
       working-directory: ${{github.workspace}}/build
       run: |
-        lcov --capture --directory . --output-file coverage.info
-        lcov --remove coverage.info '/usr/*' --output-file coverage.info
-        lcov --remove coverage.info '*conan/*' --output-file coverage.info
-        lcov --list coverage.info
+        lcov --capture --directory . --output-file coverage.info --gcov-tool /usr/bin/gcov-11
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info --gcov-tool /usr/bin/gcov-11
+        lcov --remove coverage.info '*conan/*' --output-file coverage.info --gcov-tool /usr/bin/gcov-11
+        lcov --list coverage.info --gcov-tool /usr/bin/gcov-11
 
     - name: Upload coverage
       uses: codecov/codecov-action@v2

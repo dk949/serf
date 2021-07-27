@@ -2,6 +2,8 @@
 
 #include <array>             // for array, array<>::value_type
 #include <catch2/catch.hpp>  // for operator""_catch_sr, AssertionHandler
+#include <numeric>
+#include <string_view>
 //     _                                         _   _     _     _
 //    / \   _ __ __ _ _   _ _ __ ___   ___ _ __ | |_| |   (_)___| |_
 //   / _ \ | '__/ _` | | | | '_ ` _ \ / _ \ '_ \| __| |   | / __| __|
@@ -48,11 +50,14 @@ TEST_CASE("ArgumentList::operator==(const ArgumentList &)", "[argparse][Argument
     ap::ArgumentList al0 {"arg0", "arg1", "arg2"};
     ap::ArgumentList al1 {"arg0", "arg1", "arg2"};
     ap::ArgumentList al2 {"arg1", "arg1", "arg2"};
+    ap::ArgumentList al3 {"arg1", "arg1"};
 
     CHECK(al0 == al0);
     CHECK(al0 == al1);
     CHECK(al1 == al0);
     CHECK_FALSE(al0 == al2);
+    CHECK_FALSE(al0 == al3);
+    CHECK_FALSE(al3 == al0);
 }
 
 TEST_CASE("ArgumentList::operator!=(const ArgumentList &)", "[argparse][ArgumentList][operator!=]") {
@@ -287,5 +292,55 @@ TEST_CASE("ArgParse::parse(std::span<const char *>)", "[argparse][ArgParse][pars
         CHECK(pr2.has("arg2"));
         CHECK(pr2.data());
         CHECK_THAT(pr2.data().value(), Catch::Matchers::Equals(std::vector<std::string> {"world"}));
+    }
+}
+
+//  __  __ _
+// |  \/  (_)___  ___
+// | |\/| | / __|/ __|
+// | |  | | \__ \ (__
+// |_|  |_|_|___/\___|
+//
+
+template<typename T>
+constexpr bool checkSpanEquality(std::span<T> a, std::span<T> b) {
+    return a.size() == b.size() &&  //
+           std::accumulate(std::begin(a), std::end(b), true, [n = 0u, b](bool prev, const auto &elem) mutable {
+               return prev && elem == b[n++];
+           });
+}
+
+template<>
+constexpr bool checkSpanEquality(std::span<const char *> a, std::span<const char *> b) {
+    return a.size() == b.size() &&  //
+           std::accumulate(std::begin(a), std::end(b), true, [n = 0u, b](bool prev, const auto &elem) mutable {
+               return prev && (std::string_view(elem) == std::string_view(b[n++]));
+           });
+}
+
+TEST_CASE("getArgsSpan(int , const char **)", "[argparse][misc][getArgsSpan]") {
+    SECTION("At least 1 argument") {
+        std::array args0 {"serf", "arg0"};
+        std::span<const char *> sp0 {args0};
+
+        std::array args1 {"serf", "arg0", "arg1"};
+        std::span<const char *> sp1 {args1};
+
+        CHECK(checkSpanEquality(ap::getArgsSpan(args0.size(), args0.data()), sp0.subspan(1)));
+        CHECK(checkSpanEquality(ap::getArgsSpan(args1.size(), args1.data()), sp1.subspan(1)));
+        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(args0.size(), args0.data()), sp1.subspan(1)));
+        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(args1.size(), args1.data()), sp0.subspan(1)));
+    }
+
+    SECTION("At least 1 argument") {
+        std::array args0 {"serf"};
+        std::span<const char *> sp0 {args0};
+
+        std::array args1 {"serf", "arg0"};
+        std::span<const char *> sp1 {args1};
+
+        CHECK(checkSpanEquality(ap::getArgsSpan(args0.size(), args0.data()), std::span<const char *> {}));
+        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(args0.size(), args0.data()), sp1.subspan(1)));
+        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(args1.size(), args1.data()), std::span<const char *> {}));
     }
 }

@@ -13,7 +13,7 @@ env:
   CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
 
   # lcov
-  LCOV_VERSION: 1.14
+  LCOV_VERSION: 1.15
   LCOV_BUILD_DIR: lcov_build
 
 

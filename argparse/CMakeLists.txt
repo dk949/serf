@@ -2,9 +2,7 @@ link_compile_commands()
 
 set(ARGPARSE_NAME argparse)
 
-set(SOURCE_FILES argparse.cpp)
-
-set(HEADER_FILES argparse.hpp)
+include_files()
 
 add_library(${ARGPARSE_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 

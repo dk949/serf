@@ -2,9 +2,7 @@ link_compile_commands()
 
 set(EXE_NAME serf)
 
-set(SOURCE_FILES main.cpp arghandler.cpp)
-
-set(HEADER_FILES arghandler.hpp)
+include_files()
 
 add_executable(${EXE_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 

@@ -1,17 +1,20 @@
 name: CMake
-
 on:
   pull_request:
     branches: [ trunk ]
 
 env:
+  # cmake
   BUILD_TYPE: Release
-  #CXX: /usr/bin/c++
 
-  # Conan cache environment variables
+  # conan
   CONAN_SYSREQUIRES_MODE: enabled
   CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
   CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
+
+  # lcov
+  LCOV_VERSION: 1.15
+  LCOV_BUILD_DIR: lcov_build
 
 
 jobs:
@@ -21,13 +24,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+
     - name: Set up GCC
       uses: egor-tensin/setup-gcc@v1
       with:
         version: 11
         platform: x64
 
-    - name: Cache
+
+    - name: Cache conan
+      id: cache-conan
       uses: actions/cache@v2
       env:
         cache-name: cache-conan-modules
@@ -37,14 +43,28 @@ jobs:
           ~/.cache/pip
         key: ${{ runner.os }}-${{ env.BUILD_TYPE }}-${{ hashFiles('CMakeLists.txt') }}-${{ hashFiles('cmake/Conan.cmake') }}
 
-    #- name: Bodge /usr/bin/c++
-      #run: |
-        #sudo rm -rf /usr/bin/c++ || exit 1
-        #if [ -f /usr/bin/gcc-11 ]; then
-          #sudo ln -s /usr/bin/gcc-11 /usr/bin/c++;
-        #else
-          #exit 1;
-        #fi
+
+    - name: Cache lcov
+      id: cache-lcov
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-lcov
+      with:
+        path: ${{github.workspace}}/${{ env.LCOV_BUILD_DIR }}
+        key: lcov-${{ env.LCOV_VERSION }}
+
+
+    - name: Set up lcov
+      if: steps.cache-lcov.outputs.cache-hit != 'true'
+      run: |
+        mkdir $LCOV_BUILD_DIR
+        cd $LCOV_BUILD_DIR
+        wget "https://github.com/linux-test-project/lcov/releases/download/v$LCOV_VERSION/lcov-$LCOV_VERSION.tar.gz"
+        tar -xzf "lcov-$LCOV_VERSION.tar.gz"
+        cd "lcov-$LCOV_VERSION"
+
+    - name: Install lcov
+      run: cd "$LCOV_BUILD_DIR/lcov-$LCOV_VERSION" && sudo make install
 
     - name: Configure conan
       run: pip3 install conan; conan -v
@@ -56,16 +76,37 @@ jobs:
         -DENABLE_SANITIZER_ADDRESS=ON
         -DENABLE_SANITIZER_LEAK=ON
         -DENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON
+        -DENABLE_COVERAGE=ON
         -DENABLE_CPPCHECK=OFF
         -DENABLE_CLANG_TIDY=OFF
         -DENABLE_INCLUDE_WHAT_YOU_USE=OFF
         -DENABLE_CACHE=OFF
         -DENABLE_DOXYGEN=OFF
 
+
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
 
     - name: Test
       working-directory: ${{github.workspace}}/build
       run: ctest -C ${{env.BUILD_TYPE}}
+
+
+    - name: Coverage
+      working-directory: ${{github.workspace}}/build
+      run: |
+        lcov --capture --directory . --output-file coverage.info --gcov-tool /usr/bin/gcov-11
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info --gcov-tool /usr/bin/gcov-11
+        lcov --remove coverage.info '*conan/*' --output-file coverage.info --gcov-tool /usr/bin/gcov-11
+        lcov --remove coverage.info '*test/*' --output-file coverage.info --gcov-tool /usr/bin/gcov-11
+        lcov --list coverage.info --gcov-tool /usr/bin/gcov-11
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        directory: ${{ github.workspace }}/build
+        env_vars: OS
+        files: ./build/coverage.info
 

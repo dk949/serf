@@ -14,9 +14,12 @@ if (ENABLE_CPPCHECK)
             --enable=all
             --inline-suppr
             --inconclusive
-            -I ${LIB_DIR}
-            -I ${EXE_DIR}
-            -I ${ARGPARSE_DIR}
+            -I
+            ${LIB_DIR}
+            -I
+            ${EXE_DIR}
+            -I
+            ${ARGPARSE_DIR}
             )
     else ()
         message(WARNING "cppcheck requested but executable not found")

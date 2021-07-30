@@ -1,7 +1,8 @@
 # serf package manager
 [![codecov](https://codecov.io/gh/dk949/serf/branch/dev/graph/badge.svg?token=VTK1DM5RYI)](https://codecov.io/gh/dk949/serf)
 ![CMake](https://github.com/dk949/serf/actions/workflows/cmake.yml/badge.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![C++20](https://img.shields.io/badge/C++-20-blue.svg?style=flat&logo=c%2B%2B)](https://en.cppreference.com/w/cpp/20)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ## Basic usage (commands)
 ### `serf init`
 * Initialise current directory.

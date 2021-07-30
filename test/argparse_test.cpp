@@ -326,10 +326,10 @@ TEST_CASE("getArgsSpan(int , const char **)", "[argparse][misc][getArgsSpan]") {
         std::array args1 {"serf", "arg0", "arg1"};
         std::span<const char *> sp1 {args1};
 
-        CHECK(checkSpanEquality(ap::getArgsSpan(args0.size(), args0.data()), sp0.subspan(1)));
-        CHECK(checkSpanEquality(ap::getArgsSpan(args1.size(), args1.data()), sp1.subspan(1)));
-        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(args0.size(), args0.data()), sp1.subspan(1)));
-        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(args1.size(), args1.data()), sp0.subspan(1)));
+        CHECK(checkSpanEquality(ap::getArgsSpan(static_cast<int>(args0.size()), args0.data()), sp0.subspan(1)));
+        CHECK(checkSpanEquality(ap::getArgsSpan(static_cast<int>(args1.size()), args1.data()), sp1.subspan(1)));
+        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(static_cast<int>(args0.size()), args0.data()), sp1.subspan(1)));
+        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(static_cast<int>(args1.size()), args1.data()), sp0.subspan(1)));
     }
 
     SECTION("At least 1 argument") {
@@ -339,8 +339,8 @@ TEST_CASE("getArgsSpan(int , const char **)", "[argparse][misc][getArgsSpan]") {
         std::array args1 {"serf", "arg0"};
         std::span<const char *> sp1 {args1};
 
-        CHECK(checkSpanEquality(ap::getArgsSpan(args0.size(), args0.data()), std::span<const char *> {}));
-        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(args0.size(), args0.data()), sp1.subspan(1)));
-        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(args1.size(), args1.data()), std::span<const char *> {}));
+        CHECK(checkSpanEquality(ap::getArgsSpan(static_cast<int>(args0.size()), args0.data()), std::span<const char *> {}));
+        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(static_cast<int>(args0.size()), args0.data()), sp1.subspan(1)));
+        CHECK_FALSE(checkSpanEquality(ap::getArgsSpan(static_cast<int>(args1.size()), args1.data()), std::span<const char *> {}));
     }
 }

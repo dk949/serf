@@ -1,4 +1,4 @@
-#include "decodeError.hpp"
+#include "decode_error.hpp"
 
 #include "git2/errors.h"
 #define DECODE_ERROR_(X) \

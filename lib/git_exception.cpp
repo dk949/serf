@@ -1,7 +1,7 @@
 #include "git_exception.hpp"
 
-#include "decodeError.hpp"
-#include "decodeKlass.hpp"
+#include "decode_error.hpp"
+#include "decode_klass.hpp"
 
 
 gp::GitException::GitException(git_error_code error,  //

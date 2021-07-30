@@ -19,13 +19,17 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
 
 
     - name: Set up GCC
+      if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
       uses: egor-tensin/setup-gcc@v1
       with:
         version: 11
@@ -45,6 +49,8 @@ jobs:
 
 
     - name: Cache lcov
+      if: startsWith(matrix.os, 'ubuntu')
+      shell: bash
       id: cache-lcov
       uses: actions/cache@v2
       env:
@@ -55,7 +61,8 @@ jobs:
 
 
     - name: Set up lcov
-      if: steps.cache-lcov.outputs.cache-hit != 'true'
+      if: steps.cache-lcov.outputs.cache-hit != 'true' && startsWith(matrix.os, 'ubuntu')
+      shell: bash
       run: |
         mkdir $LCOV_BUILD_DIR
         cd $LCOV_BUILD_DIR
@@ -64,13 +71,19 @@ jobs:
         cd "lcov-$LCOV_VERSION"
 
     - name: Install lcov
+      if: startsWith(matrix.os, 'ubuntu')
+      shell: bash
       run: cd "$LCOV_BUILD_DIR/lcov-$LCOV_VERSION" && sudo make install
 
     - name: Configure conan
-      run: pip3 install conan; conan -v
+      shell: bash
+      run: |
+        pip3 install conan
+        conan -v
 
 
     - name: Configure CMake
+      shell: bash
       run: cmake -B ${{github.workspace}}/build
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DENABLE_SANITIZER_ADDRESS=ON
@@ -85,15 +98,19 @@ jobs:
 
 
     - name: Build
+      shell: bash
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
 
     - name: Test
+      shell: bash
       working-directory: ${{github.workspace}}/build
       run: ctest -C ${{env.BUILD_TYPE}}
 
 
     - name: Coverage
+      if: startsWith(matrix.os, 'ubuntu')
+      shell: bash
       working-directory: ${{github.workspace}}/build
       run: |
         lcov --capture --directory . --output-file coverage.info --gcov-tool /usr/bin/gcov-11
@@ -103,6 +120,7 @@ jobs:
         lcov --list coverage.info --gcov-tool /usr/bin/gcov-11
 
     - name: Upload coverage
+      if: startsWith(matrix.os, 'ubuntu')
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

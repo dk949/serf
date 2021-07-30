@@ -1,6 +1,8 @@
 #ifndef REPO_HPP
 #define REPO_HPP
 
+#include "common_types.hpp"
+
 #include <filesystem>
 #include <git2.h>
 #include <optional>
@@ -9,8 +11,6 @@
 namespace gp {
 class Repo {
 public:
-    using Path_t = std::filesystem::path;
-    using URL_t = const char *;
     using OptRepo_t = std::optional<Repo>;
 
 private:

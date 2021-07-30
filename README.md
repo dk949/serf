@@ -77,28 +77,55 @@
 * Example:
 ```JSON
 {
-  "packages": {
-    "94241883410560": {
+  "packages": [
+    {
+      "branch": null,
+      "hash": "5afd95427d06b389b717bc0dfcb7039a6c2a2dbd",
+      "path": "path/to/repo/reponame",
       "url": "https://github.com/dk949/serf_testrepo",
-      "branch": "main",
-      "hash": "5afd954",
-      "tag": null,
-      "path": "path/to/repo/reponame"
+      "urlhash": "94241883410560"
+    },
+    {
+      "branch": "dev",
+      "hash": null,
+      "path": "path/to/repo/reponame",
+      "url": "https://github.com/dk949/serf_testrepo",
+      "urlhash": "98321853470320"
     }
-  },
-  "numPackages": 1
+  ],
+  "numPackages": 2
 }
+
 ```
 * Explanation:
     * All packages are stored in the object `packages`
-    * name of each package object is the hashed url with the current number of packages appended to the end.
+    * `urlhash` of each package object is the hashed url with the current number of packages appended to the end.
         * The number of packages (not counting the one being added) is appended to allow multiple versions of the same package (from the same url) to exist.
         * `std::hash<const char*>{}("https://github.com/dk949/serf_testrepo0"`
-    * `hash` and `tag` are mutually exclusive.
-        * If both are present, an error is thrown
-        * If neither is present, this means that `serf latest [PATH]` was used and latest commit from `branch` will be used.
+    * `branch` refers to the latest commit on a certain branch
+        * `dev` in the second example
+        * This is enabled by the use of `serf latest [PATH]`
+    * `hash` refers to some commit hash (full). It always refers to the same version of the repo
+        * unless someone does a force push
+        * TODO: force push
+        * This is the default
+    * `hash` and `branch` are mutually exclusive.
+        * If both are present or if neither are present, an error is thrown.
     * In the simplest case where repo was cloned into the project root directory and not renamed, `path` would have looked like this: `"path": "serf_testrepo"`.
         * Because a custom path was specified, the symlink will be created in `path/to/repo` and the name of the link will be `reponame`.
+    * `url` is self explanatory
+        * TODO: support local repos? Probably not.
+### `.serf_files`
+* In order not to pollute users' project root directories all files relating to serf are stored in the folder `.serf_files`
+    * Note: on *nix this is a hidden directory (because of the dot).
+    * TODO: figure out how to make a directory hidden on windows.
+* This folder can contain the following files/directories. More could be added.
+    * `serf_packages.json`
+        * File. Holds configurations for all packages.
+    * `serf_bin`
+        * Directory. Holds the serf binary and any additional scripts that may be required in the future.
+    * `serf_store`
+        * Directory. See below.
 ### `serf_store`
 * This is the directory where all the repositories are actually stored.
 * Directory for each repo is named with the same hash as the package (for the same reason).

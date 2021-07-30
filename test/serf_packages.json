@@ -1,12 +1,19 @@
 {
-  "packages": {
-    "94241883410560": {
+  "packages": [
+    {
+      "branch": null,
+      "hash": "5afd95427d06b389b717bc0dfcb7039a6c2a2dbd",
+      "path": "path/to/repo/reponame",
       "url": "https://github.com/dk949/serf_testrepo",
-      "branch": "main",
-      "hash": "5afd954",
-      "tag": null,
-      "path": "path/to/repo/reponame"
+      "urlhash": "94241883410560"
+    },
+    {
+      "branch": "dev",
+      "hash": null,
+      "path": "path/to/repo/reponame",
+      "url": "https://github.com/dk949/serf_testrepo",
+      "urlhash": "98321853470320"
     }
-  },
-  "numPackages": 1
+  ],
+  "numPackages": 2
 }

@@ -81,7 +81,7 @@ jobs:
 
     - name: Configure CMake
       shell: bash
-      run: cmake -B ${{github.workspace}}/build
+      run: mkdir ${{ github.workspace }}/build && cmake -B ${{ github.workspace }}/build
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DENABLE_SANITIZER_ADDRESS=ON
         -DENABLE_SANITIZER_LEAK=ON
@@ -97,7 +97,7 @@ jobs:
 
     - name: Build
       shell: bash
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{ github.workspace }}/build --config ${{env.BUILD_TYPE}}
 
 
     - name: Test

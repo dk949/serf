@@ -18,7 +18,7 @@ macro (run_conan)
         OPTIONS
         ${CONAN_EXTRA_OPTIONS}
         SETTINGS
-        compiler.version=11
+        #compiler.version=11
         BASIC_SETUP
         CMAKE_TARGETS
         BUILD

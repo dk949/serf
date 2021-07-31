@@ -195,7 +195,7 @@ TEST_CASE("setup", "[arghandler]") {
 
     SECTION("serf setup arg (throws, too many args") {
         auto argv = std::array {"serf", "setup", "arg"};
-        auto args = ap::getArgsSpan(argv.size(), argv.data());
+        auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
         CHECK_THROWS(srf::getArgs(args));
     }
@@ -205,14 +205,14 @@ TEST_CASE("no args", "[arghandler]") {
     // ### `serf`
     SECTION("serf (nothrow") {
         auto argv = std::array {"serf"};
-        auto args = ap::getArgsSpan(argv.size(), argv.data());
+        auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
         CHECK_NOTHROW(srf::getArgs(args));
     }
 
     SECTION("serf arg (throws, too many args") {
         auto argv = std::array {"serf", "arg"};
-        auto args = ap::getArgsSpan(argv.size(), argv.data());
+        auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
         CHECK_THROWS(srf::getArgs(args));
     }

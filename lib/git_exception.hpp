@@ -1,6 +1,5 @@
 #ifndef GIT_EXCEPTION_HPP
 #define GIT_EXCEPTION_HPP
-#include "check.hpp"
 #include "git2.h"
 
 #include <exception>

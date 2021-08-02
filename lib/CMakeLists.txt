@@ -2,10 +2,7 @@ link_compile_commands()
 
 set(LIB_NAME gitpac)
 
-set(SOURCE_FILES gitpac.cpp)
-
-set(HEADER_FILES gitpac.hpp)
-
+include_files()
 add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(${LIB_NAME} SYSTEM PRIVATE ${CONAN_INCLUDE_DIRS_SPDLOG})

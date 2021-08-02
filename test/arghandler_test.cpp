@@ -17,21 +17,21 @@ TEST_CASE("init", "[arghandler]") {
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf init dir (nothrow)") {  // ccls is really struggling here
         auto argv = std::array {"serf", "init", "dir"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf init dir arg (throws, too many args") {
         auto argv = std::array {"serf", "init", "dir", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }
 
@@ -43,28 +43,28 @@ TEST_CASE("clone", "[arghandler]") {
         auto argv = std::array {"serf", "clone", "https://github.com/dk949/serf_testrepo.git"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf clone git@github.com:dk949/serf_testrepo.git (nothrow)") {
         auto argv = std::array {"serf", "clone", "git@github.com:dk949/serf_testrepo.git"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf clone https://github.com/dk949/serf_testrepo.git dir (nothrow)") {
         auto argv = std::array {"serf", "clone", "https://github.com/dk949/serf_testrepo.git", "dir"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf clone git@github.com:dk949/serf_testrepo.git dir (nothrow)") {
         auto argv = std::array {"serf", "clone", "git@github.com:dk949/serf_testrepo.git", "dir"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
 
@@ -73,7 +73,7 @@ TEST_CASE("clone", "[arghandler]") {
         auto argv = std::array {"serf", "clone", "arg", "arg", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }
 
@@ -83,14 +83,14 @@ TEST_CASE("delete", "[arghandler]") {
         auto argv = std::array {"serf", "delete", "dir"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf delete dir arg (throws, too many args)") {
         auto argv = std::array {"serf", "delete", "dir", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }
 
@@ -101,14 +101,14 @@ TEST_CASE("checkout", "[arghandler]") {
         auto argv = std::array {"serf", "checkout", "dir", "dev"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf checkout dir dev arg (throws, too many args)") {
         auto argv = std::array {"serf", "checkout", "dir", "dev", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }
 
@@ -121,21 +121,21 @@ TEST_CASE("update", "[arghandler]") {
         auto argv = std::array {"serf", "update"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf update dir (nothrow") {
         auto argv = std::array {"serf", "update", "dir"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf update dir arg (throws, too many args)") {
         auto argv = std::array {"serf", "update", "dir", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }
 
@@ -145,14 +145,14 @@ TEST_CASE("latest", "[arghandler]") {
         auto argv = std::array {"serf", "latest", "dir"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf latest dir arg (throws, too many args") {
         auto argv = std::array {"serf", "latest", "dir", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }
 
@@ -166,21 +166,21 @@ TEST_CASE("pull", "[arghandler]") {
         auto argv = std::array {"serf", "pull"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf pull dir (nothrow") {
         auto argv = std::array {"serf", "pull", "dir"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf pull dir arg (throws, too many args)") {
         auto argv = std::array {"serf", "pull", "dir", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }
 
@@ -190,14 +190,14 @@ TEST_CASE("setup", "[arghandler]") {
         auto argv = std::array {"serf", "setup"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf setup arg (throws, too many args") {
         auto argv = std::array {"serf", "setup", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }
 
@@ -207,13 +207,13 @@ TEST_CASE("no args", "[arghandler]") {
         auto argv = std::array {"serf"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_NOTHROW(srf::getArgs(args));
+        CHECK_NOTHROW(srf::getParsed(args));
     }
 
     SECTION("serf arg (throws, too many args") {
         auto argv = std::array {"serf", "arg"};
         auto args = ap::getArgsSpan(Int(argv.size()), argv.data());
 
-        CHECK_THROWS(srf::getArgs(args));
+        CHECK_THROWS(srf::getParsed(args));
     }
 }

@@ -1,5 +1,11 @@
 #include "gitpac.hpp"
-int func(){
 
-    return 0;
+gp::Git::Git() {
+    git_libgit2_init();
 }
+
+
+gp::Git::~Git() {
+    git_libgit2_shutdown();
+}
+

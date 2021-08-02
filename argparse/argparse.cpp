@@ -92,7 +92,14 @@ ap::ParseResult::ParseResult(std::vector<std::string> args, std::optional<std::v
         m_args(std::move(args)), m_data(std::move(data)) {}
 
 bool ap::ParseResult::is(const std::string &argName) const {
+    if (m_args.empty()) {
+        return argName.empty();
+    }
     return m_args[0] == argName;
+}
+
+bool ap::ParseResult::is() const {
+    return m_args.empty();
 }
 
 bool ap::ParseResult::has(const std::string &argName) const {

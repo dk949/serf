@@ -12,6 +12,7 @@ set(ARGPARSE_NAME argparse)
 set(ARGPARSE_DIR ${CMAKE_SOURCE_DIR}/argparse)
 
 include(cmake/CompileCommands.cmake)
+include(cmake/IncludeFiles.cmake)
 include(cmake/StandardProjectSettings.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
 

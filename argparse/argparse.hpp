@@ -56,6 +56,7 @@ public:
     ParseResult(std::vector<std::string> args, std::optional<std::vector<std::string>> data);
 
     bool is(const std::string &) const;
+    bool is() const;
 
     bool has(const std::string &) const;
 

@@ -3,5 +3,5 @@ build/
 tags
 */tags
 */compile_commands.json
-
+errors.err
 Session.vim

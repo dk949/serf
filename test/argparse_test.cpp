@@ -154,11 +154,26 @@ TEST_CASE("ParseResult::ParseResult(std::vector<const char *>, std::optional<std
 
 TEST_CASE("ParseResult::is(const char *)", "[argparse][ParseResult][is]") {
     ap::ParseResult pr0 {{"arg0", "arg1"}, std::vector<std::string> {"hello"}};
+    ap::ParseResult pr1 {{}, std::vector<std::string> {}};
     CHECK(pr0.is("arg0"));
     SECTION("is should only check 1st arg") {
         CHECK_FALSE(pr0.is("arg1"));
     }
+
     CHECK_FALSE(pr0.is("arg2"));
+
+    SECTION("if no args supplied") {
+        CHECK(pr1.is(""));
+        CHECK_FALSE(pr1.is("arg1"));
+        CHECK_FALSE(pr1.is("arg2"));
+    }
+}
+TEST_CASE("ParseResult::is()", "[argparse][ParseResult][is]") {
+    ap::ParseResult pr0 {{"arg0", "arg1"}, std::vector<std::string> {"hello"}};
+    ap::ParseResult pr1 {{}, std::vector<std::string> {}};
+
+    CHECK(pr1.is());
+    CHECK_FALSE(pr0.is());
 }
 
 TEST_CASE("ParseResult::has(const char *)", "[argparse][ParseResult][has]") {

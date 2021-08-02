@@ -5,7 +5,8 @@
 
 #ifdef _WIN32
 #pragma push
-#pragma warning(suppress: 4101)
+#pragma warning(suppress: C4670)
+#pragma warning(suppress: C4673)
 #endif
 
 bool gp::check(git_error_code error) {

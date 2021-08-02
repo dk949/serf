@@ -3,6 +3,11 @@
 #include <git2/errors.h>
 
 
+#ifdef _WIN32
+#pragma push
+#pragma warning(suppress: 4101)
+#endif
+
 bool gp::check(git_error_code error) {
     if (error != GIT_OK) {
         const auto *e = git_error_last();
@@ -70,3 +75,6 @@ bool gp::check(git_error_code error) {
     }
     return true;
 }
+#ifdef _WIN32
+#pragma pop
+#endif

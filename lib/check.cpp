@@ -1,7 +1,5 @@
 #include "check.hpp"
 
-#include "exceptions.hpp"
-
 #include <git2/errors.h>
 
 

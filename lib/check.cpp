@@ -4,9 +4,8 @@
 
 
 #ifdef _WIN32
-#pragma warning( push )
-#pragma warning( suppress: C4670 )
-#pragma warning( suppress: C4673 )
+#pragma warning( disable: 4670 )
+#pragma warning( disable: 4673 )
 #endif
 
 bool gp::check(git_error_code error) {
@@ -76,6 +75,3 @@ bool gp::check(git_error_code error) {
     }
     return true;
 }
-#ifdef _WIN32
-#pragma warning( pop )
-#endif

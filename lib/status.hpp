@@ -7,13 +7,14 @@
 namespace st {
 struct Status {
     char val;
-    operator bool() {
+    constexpr operator bool() const {
         return !val;
     }
     enum StatusCode : char {
         INT_ERROR = -1,
         OK,
         FS_ERROR,
+        URL_ERROR,
         NET_ERROR,
     };
     std::partial_ordering operator<=>(const Status &) const = default;

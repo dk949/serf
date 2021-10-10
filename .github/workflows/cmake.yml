@@ -75,12 +75,12 @@ jobs:
 
     - name: Configure conan
       run: |
-        pip3 install conan
+        pip3 install conan --upgrade
         conan -v
 
 
     - name: Configure CMake
-      run: mkdir ${{ github.workspace }}/build && cmake -B ${{ github.workspace }}/build
+      run: cmake -B ${{ github.workspace }}/build
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         -DENABLE_SANITIZER_ADDRESS=ON
         -DENABLE_SANITIZER_LEAK=ON

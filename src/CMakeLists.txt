@@ -9,10 +9,15 @@ add_executable(${EXE_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 add_dependencies(${EXE_NAME} ${LIB_NAME})
 add_dependencies(${EXE_NAME} ${ARGPARSE_NAME})
 
-target_include_directories(${EXE_NAME} SYSTEM PRIVATE ${CONAN_INCLUDE_DIRS_SPDLOG})
-target_include_directories(${EXE_NAME} SYSTEM PRIVATE ${CONAN_INCLUDE_DIRS_LIBGIT2})
-target_include_directories(${EXE_NAME} SYSTEM PRIVATE ${LIB_DIR})
-target_include_directories(${EXE_NAME} SYSTEM PRIVATE ${ARGPARSE_DIR})
+target_include_directories(
+    ${EXE_NAME} SYSTEM
+    PRIVATE
+        ${CONAN_INCLUDE_DIRS_SPDLOG}
+        ${CONAN_INCLUDE_DIRS_LIBGIT2}
+        ${LIB_DIR}
+        ${ARGPARSE_DIR}
+        ${CONAN_INCLUDE_DIRS_CTRE}
+    )
 
 target_link_libraries(
     ${EXE_NAME}

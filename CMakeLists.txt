@@ -74,7 +74,7 @@ if (ENABLE_PCH)
 endif ()
 
 # These Libs are needed by the project
-set(CONAN_EXTRA_REQUIRES "libgit2/1.1.0" "nlohmann_json/3.9.1")
+set(CONAN_EXTRA_REQUIRES "libgit2/1.1.0" "nlohmann_json/3.9.1" "ctre/3.4.1")
 
 set(CONAN_EXTRA_OPTIONS "")
 

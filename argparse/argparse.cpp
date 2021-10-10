@@ -134,7 +134,7 @@ bool ap::ArgParse::canBeNull() const {
     return m_canBeNull;
 }
 
-ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
+std::optional<ap::ParseResult> ap::ArgParse::parse(std::span<const char *> args) {
     /*
     Problem:
         if 2 `ArgumentList` exist where 1st has a named `Argument` where second one has data,
@@ -152,16 +152,16 @@ ap::ParseResult ap::ArgParse::parse(std::span<const char *> args) {
 
 
     if (args.empty() && m_canBeNull) {
-        return {{}, std::nullopt};
+        return ap::ParseResult{{}, std::nullopt};
     }
 
     for (const auto &command : m_argLists) {
         // cppcheck-suppress useStlAlgorithm; false positive for find_if
         if (auto res = command.isSame(args)) {
-            return {command.getArgs(), res->empty() ? std::nullopt : res};
+            return ap::ParseResult{command.getArgs(), res->empty() ? std::nullopt : res};
         }
     }
-    throw std::logic_error("Could not parse");
+    return std::nullopt;
 }
 
 

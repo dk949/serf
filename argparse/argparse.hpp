@@ -77,7 +77,7 @@ public:
     const std::vector<ArgumentList> &getArgLists() const;
     bool canBeNull() const;
 
-    ParseResult parse(std::span<const char *> args);
+    std::optional<ParseResult> parse(std::span<const char *> args);
 
 
     // cppcheck-suppress functionStatic; function can only be static in release mode

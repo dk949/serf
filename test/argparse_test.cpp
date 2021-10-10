@@ -264,11 +264,11 @@ TEST_CASE("ArgParse::parse(std::span<const char *>)", "[argparse][ArgParse][pars
         std::array args1 {"arg0", "arg1", "hello"};
         std::span<const char *> sp1 {args1};
 
-        CHECK_NOTHROW(ap0.parse(sp0));
-        CHECK_THROWS(ap0.parse(sp1));
+        CHECK(ap0.parse(sp0));
+        CHECK_FALSE(ap0.parse(sp1));
 
-        CHECK_THROWS(ap1.parse(sp0));
-        CHECK_NOTHROW(ap1.parse(sp1));
+        CHECK(ap1.parse(sp0));
+        CHECK_FALSE(ap1.parse(sp1));
     }
 
     SECTION("Named arguments should not be mistaken for data") {
@@ -290,23 +290,23 @@ TEST_CASE("ArgParse::parse(std::span<const char *>)", "[argparse][ArgParse][pars
         auto pr1 = ap0.parse(sp1);
         auto pr2 = ap0.parse(sp2);
 
-        CHECK(pr0.is("arg0"));
-        CHECK(pr0.has("arg1"));
-        CHECK(pr0.has("arg2"));
-        CHECK_FALSE(pr0.data());
+        CHECK(pr0->is("arg0"));
+        CHECK(pr0->has("arg1"));
+        CHECK(pr0->has("arg2"));
+        CHECK_FALSE(pr0->data());
 
 
-        CHECK(pr1.is("arg0"));
-        CHECK(pr1.has("arg1"));
-        CHECK_FALSE(pr1.has("arg2"));
-        CHECK(pr1.data());
-        CHECK_THAT(pr1.data().value(), Catch::Matchers::Equals(std::vector<std::string> {"hello"}));
+        CHECK(pr1->is("arg0"));
+        CHECK(pr1->has("arg1"));
+        CHECK_FALSE(pr1->has("arg2"));
+        CHECK(pr1->data());
+        CHECK_THAT(pr1->data().value(), Catch::Matchers::Equals(std::vector<std::string> {"hello"}));
 
-        CHECK(pr2.is("arg0"));
-        CHECK_FALSE(pr2.has("arg1"));
-        CHECK(pr2.has("arg2"));
-        CHECK(pr2.data());
-        CHECK_THAT(pr2.data().value(), Catch::Matchers::Equals(std::vector<std::string> {"world"}));
+        CHECK(pr2->is("arg0"));
+        CHECK_FALSE(pr2->has("arg1"));
+        CHECK(pr2->has("arg2"));
+        CHECK(pr2->data());
+        CHECK_THAT(pr2->data().value(), Catch::Matchers::Equals(std::vector<std::string> {"world"}));
     }
 }
 

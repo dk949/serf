@@ -1,5 +1,6 @@
 #include "arghandler.hpp"  // for getArgs
 #include "argparse.hpp"    // for getArgsSpan
+#include "gitpac.hpp"
 
 #include <memory>           // for allocator
 #include <spdlog/spdlog.h>  // for set_pattern
@@ -7,17 +8,22 @@
 
 
 int main(int argc, const char **argv) {
-    spdlog::set_pattern("[%l]: %v");
+    spdlog::set_pattern("%^[%l]%$: %v");
 
-    const auto parsed = srf::getParsed(ap::getArgsSpan(argc, argv));
+    const auto parsedOpt = srf::getParsed(ap::getArgsSpan(argc, argv));
+    if (!parsedOpt) {
+        spdlog::critical("Could not parse");
+        std::exit(-1);
+    }
+    const auto parsed = *parsedOpt;
 
     if (parsed.is()) {
-        spdlog::info("nothing passed in");
+        spdlog::critical("nothing passed in");
+        std::exit(-1);
     } else if (parsed.is("init")) {
-        if (const auto data = parsed.data()) {
-            spdlog::info("init. data = {}", (*data)[0]);
-        } else {
-            spdlog::info("init with no data");
+        if (const auto status = gp::init(parsed.data()); status != st::Ok) {
+            spdlog::critical("Could not get init path");
+            std::exit(status.val);
         }
     } else if (parsed.is("clone")) {
         const auto data = parsed.data().value();

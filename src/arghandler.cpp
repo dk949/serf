@@ -6,7 +6,7 @@
 
 
 
-ap::ParseResult srf::getParsed(std::span<const char *> args) {
+std::optional<ap::ParseResult> srf::getParsed(std::span<const char *> args) {
     return ap::ArgParse()
         .add({"init"}, "serf init")
         .add({"init", ap::noName}, "serf init [DIR_NAME]")

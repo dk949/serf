@@ -10,9 +10,9 @@
 #include <vector>
 
 
+// TODO: use boost::outcome<>
 
 namespace gp {
-// TODO: use boost::outcome<>
 st::Status init(std::optional<std::vector<std::string>> path) {
     fs::PathT workingDir;
     if (path) {
@@ -26,10 +26,8 @@ st::Status init(std::optional<std::vector<std::string>> path) {
     }
 
 
-    spdlog::info("workingDir = {}", workingDir->string());
     fs::createDir(*workingDir);
     workingDir->append("serf_packages.json");
-    spdlog::info("workingDir = {}", workingDir->string());
     fs::createFile(*workingDir);
     fs::createDir(workingDir->parent_path().append("serf_store"));
 

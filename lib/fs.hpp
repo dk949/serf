@@ -1,5 +1,6 @@
 #ifndef FS_HPP
 #define FS_HPP
+#include "fscall.hpp"
 #include "status.hpp"
 
 #include <filesystem>
@@ -10,6 +11,7 @@
 
 namespace gp::fs {
 
+
 std::string_view getFileStatus(const std::ofstream &f) {
     return f.bad()  ? "Non-recovarable error" :
            f.fail() ? "Recoverable error" :
@@ -19,16 +21,7 @@ std::string_view getFileStatus(const std::ofstream &f) {
 using PathT = std::optional<std::filesystem::path>;
 
 PathT getAbsPath(std::string_view path) {
-    std::error_code err;
-    const auto absPath = std::filesystem::absolute(path, err);
-    if (!err) {
-        return absPath;
-    }
-    spdlog::critical(  //
-        "Error: {}: Could not get asolute valie fo directory {}",
-        err.message(),
-        path);
-    return std::nullopt;
+    return fsc::call<fsc::AbsoluteT>(std::filesystem::absolute, path);
 }
 
 PathT getAbsPath(const std::filesystem::path &path) {
@@ -36,29 +29,11 @@ PathT getAbsPath(const std::filesystem::path &path) {
 }
 
 PathT getCWD() {
-    std::error_code err;
-    const auto currPath = std::filesystem::current_path();
-    if (!err) {
-        return currPath;
-    }
-    spdlog::critical(  //
-        "Error: {}: Could not get Could not get current directory",
-        err.message());
-    return std::nullopt;
+    return fsc::call<fsc::CurrentPathT>(std::filesystem::current_path);
 }
 
 st::Status createDir(const std::filesystem::path &path) {
-    std::error_code err;
-    std::filesystem::create_directory(path, err);
-    if (!err) {
-        return st::Ok;
-    }
-
-    spdlog::critical(  //
-        "Error: {}: Could not create directory {}",
-        err.message(),
-        path.string());
-    return st::Err(st::Status::FS_ERROR);
+    return fsc::call<fsc::CreateDirT>(std::filesystem::create_directory, path);
 }
 
 st::Status createFile(const std::filesystem::path &path) {
@@ -75,6 +50,25 @@ st::Status createFile(const std::filesystem::path &path) {
         "hello": "file"
     })";
     return st::Ok;
+}
+
+PathT getSerfRoot(std::filesystem::path path) {
+    const auto root = path.root_directory();  // Apparantly this one literally cannot fail
+
+    if (!fsc::call<fsc::IsDirT>(std::filesystem::is_directory, path)) {
+        path = path.parent_path();
+    }
+
+    while (path != root) {
+        for (const auto &elem : std::filesystem::directory_iterator(path)) {
+            if (elem.is_regular_file() && elem.path().filename() == "serf_packages.json") {
+                spdlog::info("path = {}, root = {}, path == root = {}", path.string(), root.string(), path == root);
+                return path;
+            }
+        }
+        path = path.parent_path();
+    }
+    return std::nullopt;
 }
 
 }  // namespace gp::fs

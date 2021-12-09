@@ -8,7 +8,7 @@
 
 
 int main(int argc, const char **argv) {
-    spdlog::set_pattern("%^[%l]%$: %v");
+    spdlog::set_pattern("%^%v%$");
 
     const auto parsedOpt = srf::getParsed(ap::getArgsSpan(argc, argv));
     if (!parsedOpt) {
@@ -26,11 +26,9 @@ int main(int argc, const char **argv) {
             std::exit(status.val);
         }
     } else if (parsed.is("clone")) {
-        const auto data = parsed.data().value();
-        if (data.size() == 1) {
-            spdlog::info("clone with 1 data. data = {}", data[0]);
-        } else if (data.size() == 2) {
-            spdlog::info("clone with 2 data. data1 = {}, data2 = {}", data[0], data[1]);
+        if (const auto status = gp::clone(parsed.data()); status != st::Ok) {
+            spdlog::critical("Could not clone repo");
+            std::exit(status.val);
         }
     } else if (parsed.is("delete")) {
         const auto data = parsed.data().value();

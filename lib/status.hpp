@@ -11,11 +11,11 @@ struct Status {
         return !val;
     }
     enum StatusCode : char {
-        INT_ERROR = -1,
-        OK,
-        FS_ERROR,
-        URL_ERROR,
-        NET_ERROR,
+        INT_ERROR = -1,  // Internal error, a bug within serf
+        OK,              // All good
+        FS_ERROR,        // Error returned by the file system API
+        NET_ERROR,       // Could not connect to the network or a specified domain
+        SERF_ERROR,      // User error
     };
     std::partial_ordering operator<=>(const Status &) const = default;
 };

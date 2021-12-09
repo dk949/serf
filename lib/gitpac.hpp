@@ -1,14 +1,9 @@
 #ifndef core_hpp
 #define core_hpp
-#include "git_exception.hpp"
-#include "repo.hpp"
+#include "clone.hpp"
 #include "init.hpp"
 
 #include <git2.h>
-
-
-
-
 
 
 

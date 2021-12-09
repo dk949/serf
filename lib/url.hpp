@@ -24,6 +24,13 @@ public:
         return std::nullopt;
     }
 
+    std::string &str() {
+        return m_url;
+    }
+    const std::string &str() const {
+        return m_url;
+    }
+
 
 private:
     // Will probably match a lot of URLs before it breaks

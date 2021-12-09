@@ -139,7 +139,8 @@
     of packages appended to the end.
     - The number of packages (not counting the one being added) is appended to
       allow multiple versions of the same package (from the same url) to exist.
-    - `std::hash<const char*>{}("https://github.com/dk949/serf_testrepo0"`
+    - `std::hash<const char*>{}("https://github.com/dk949/serf_testrepo0")`
+    - TODO: Consider FNV-1a
   - `branch` refers to the latest commit on a certain branch
     - `dev` in the second example
     - This is enabled by the use of `serf latest [PATH]`
